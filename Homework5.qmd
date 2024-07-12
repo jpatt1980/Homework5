@@ -1,0 +1,188 @@
+---
+title: "Homework 5 - Heart Disease Modeling"
+author: "Jason M. Pattison, ST 558-601, Summer 1 2024"
+format: html
+editor: visual
+---
+
+# "Homework 5 - Heart Disease Modeling"
+
+## Task 1: Conceptual Questions
+
+1.  What is the purpose of using cross-validation when fitting a random forest model?
+
+> Answer
+
+2.  Describe the bagged tree algorithm.
+
+> Answer
+
+3.  What is meant by a general linear model?
+
+> Answer
+
+4.  When fitting a multiple linear regression model, what does adding an interaction term do? That is, what does it allow the model to do differently as compared to when it is not included in the model?
+
+> Answer
+
+5.  Why do we split our data into a training and test set?
+
+> Answer
+
+## Task 2: Fitting Models
+
+The first thing we'll need to do is establish the libraries required to run the code for each of the models we're going to develop.
+
+```{r download libraries}
+
+library(tidyverse)
+library(haven)
+library(knitr)
+library(caret)
+library(tree)
+library(randomForest)
+library(rgl) 
+
+```
+
+### 2.1 Quick EDA/Data Preparation
+
+2.1.1 Read in heart.csv. Check on missingness and summarize the data, especially with respect to the variable relationships to HeartDisease.
+
+```{r create data frame}
+
+heart_df <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/heart.csv", show_col_types = FALSE)
+
+heart_df
+
+```
+
+Check on for NA values in the data frame results in
+
+```{r}
+
+sum(is.na(heart_df))
+
+```
+
+There are no missing values in the data set.
+
+Summarize the data set with respect to the variable relationships to HeartDisease.
+
+```{r}
+
+
+
+```
+
+2.1.2 Create a new variable that is a factor of HeartDisease, (1 = Yes, 0 = No) Remove the ST_Slope and HeartDisease variables.
+
+```{r}
+
+
+
+```
+
+2.1.3 Set-up the data frame to ensure the variables are all numeric predictors for kNN modeling later in the program.
+
+```{r}
+
+
+
+```
+
+### 2.2 Split the data
+
+```{r}
+
+
+
+```
+
+### 2.3 kNN
+
+2.3.1 Scale back the data frame to only have numeric variables for kNN modeling.
+
+```{r}
+
+
+
+```
+
+2.3.2. Train the model using 10 fold cross-validation with the number of steps being 3.
+
+```{r}
+
+
+
+```
+
+Set the `tuneGrid` so that the values considered are k = 1:40. Check how well the chosen model does on the test set using the `confusionMatrix` function.
+
+### 2.4 Logistic Regression
+
+2.4.1 Posit three different logistic regression models using the EDA from section 2.1. Because the `glm` function can handle factor and character type variables. do not need to include the dummy variables created in section 2.1.2
+
+```{r}
+
+
+
+```
+
+Fit the models on the training set. Use CV with the same parameters used in the kNN model. **Note to self: Pre-process the data or no???**
+
+```{r}
+
+
+
+```
+
+**Identify the best model and provide a basic `summary` of it.**
+
+Check how well the chosen model does on the test set using the `confusionMatrix` function.
+
+```{r}
+
+
+
+```
+
+### 2.5 Tree Models
+
+2.5.1 Choose the variables of interest and use repeated 10 fold CV to select a best fit.
+
+-   classificaiton tree (use method = rpart: tuning parameter is cp, use values 1, 0.001, 0.002, ..., 0.1)
+
+```{r}
+
+
+
+```
+
+-   random forest (use method = rf: tuning parameter is mtry, use values of 1, 2, ..., \# of predictors) **bagging is a special case in this model** -
+
+```{r}
+
+
+
+```
+
+-   boosted tree (use method = gbm: tuning parameters are n.trees, interaction.depth, shrinkage, and n.minabsinnode). Use all combinations of n.trees of 25, 50, 100, and 200; interaction.depth of 1, 2, 3; shrinkage = 0.1; and nminobsinnode = 10.**Use `expand.grid` to create the data frame for `tuneGrid` and verbose = FALSE limits the output produced**.
+
+```{r}
+
+
+
+```
+
+Check how each of the above chosen models do on the test set using the `confusionMatrix` function.
+
+```{r}
+
+
+
+```
+
+### Wrap up
+
+Which model overall did the best job (in terms of accuracy) on the test set?
