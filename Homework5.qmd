@@ -51,7 +51,8 @@ library(rgl)
 
 ```{r create data frame}
 
-heart_df <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/heart.csv", show_col_types = FALSE)
+heart_df <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/heart.csv", 
+                     show_col_types = FALSE)
 
 heart_df
 
@@ -59,21 +60,155 @@ heart_df
 
 Check on for NA values in the data frame results in
 
-```{r}
+```{r check for missingness}
 
-sum(is.na(heart_df))
+sum_na <- function(col) {
+  sum(is.na(col))
+}
+
+heart_df_na_summary <- heart_df |>
+  summarize(across(everything(), sum_na))
+
+print(heart_df_na_summary)
 
 ```
 
-There are no missing values in the data set.
+We see that there are no missing values in the data set.
+
+Next we will summarize the data to determine if there are any irregularities that need to be addressed before further analysis
+
+```{r data structure}
+
+print(summary(heart_df))
+
+```
+
+Review of the numeric variable summaries shows that there is an irregularity in the RestingBP data, and there may or may not be one in the Cholesterol data as well. For the remaining five character variables, we generated contingency tables that will be used to determine if the variable data requires further investigation for data cleaning or not. 
+
+The irregularity in RestingBP is the summary information shows a minimum entry of 0.0. This value is highly unlikely unless the PT observed is already a corpse (or mannequin). First we will use the `sum()` function to determine how many values input for RestingBP are "0".
+
+```{r}
+list("RestingBP_eq_zero" = sum(heart_df$RestingBP == 0))
+
+```
+We see that there is only one entry that meets this criteria. Because this one entry will have minimal affect on the prediciton models, we may want to consider leaving the PT's information for contribution to the other variables used in generating our training model. 
+
+The Cholesterol summary shows a minimum entry of 0.0, which is also unlikely given every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Like with RestingBP, we will use the `sum()` function to determine how many values for Cholesterol are "0". 
+
+```{r}
+
+list("Cholesterol_eq_zero" = sum(heart_df$Cholesterol == 0))
+
+```
+
+The `sum()` function determined that there are 172 entries with "0" reported for the PTs Cholesterol level. This accounts for approximately 19% of the overall data set. This is a large amount of the sample population, which suggests the use of "0" was intentional instead of "NA" or some other coding. Imputing the mean of the remaining 81% for these values without knowing their distribution across the five data sources risks heavily biasing our prediction modeling. Further summary analysis is requried for assessing what to do with these observations. First, we will use a histogram to determine what the distribution looks like. 
+
+```{r}
+
+ggplot(heart_df, aes(Cholesterol)) +
+  geom_histogram(binwidth=10)
+
+```
+
+The histogram confirms the 172 entries of "0" as outliers and identified a second group of outliers to the right of the data in the range of 450 to 600. The rest of the data appears to have a generally normal distribution. 
+
+In order to confirm the Cholesterol outliers, and how they're affecting the HeartDisease variable, we will use box and whisker plots. One for the overall HeartDisease variable, and a second for HeartDisease's sub-groups. The second plot is necessary to assess how the outliers are affecting HeartDisease's "0" group separate from the "1" group. 
+
+```{r}
+
+ggplot(heart_df, aes(HeartDisease, Cholesterol)) +
+  geom_boxplot() +
+  labs(x = "H")
+
+```
+
+Review of the combined box and whisker plot of HeartDisease confirms the outliers at "0" and in the range of "400" through "600". 
+
+```{r}
+
+ggplot(heart_df, aes(HeartDisease, Cholesterol)) +
+  geom_boxplot(aes(group = HeartDisease)) 
+
+```
+Review of the sub-group histogram shows that the Cholesterol values of "0" greatly affect the IQR of the "1" HeartDisease subgroup while having minimal to no effect on the "0" HeartDisease subgroup. The Cholesterol values of "0" do not appear to have an affect on the median values of either subgroup as they both are near the overall group median of 223. 
+
+With all visual summary observations taken into consideration, imputing the mean of the 81% of the rest of the Cholesterol values is reasonable after removing the outlying values greater than 400. 
+
+Next we generated a summary table of Sex.
+
+```{r}
+
+print(table("Sex" = heart_df$Sex))
+
+```
+
+The [Kaggle website](https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction) reported that this variable only provided a binary option, so there does not appear to be any need to further analyze it.
+
+Next, we generalized a summary table of Chest Pain Type. 
+
+```{r}
+
+print(table("Chest Pain Type" = heart_df$ChestPainType))
+
+```
+Each of these factors are consistent with what was reported on the Kaggle site. There does not appear to be any need to further analyze it. 
+
+Next we generated a summary table for Resting ECG. 
+
+```{r}
+
+print(table("Resting ECG" = heart_df$RestingECG))
+
+```
+
+Each of these factors are consistent with what was reported on the Kaggle site. There does not appear to be any need to further analyze it. 
+
+The final variable we generated a summary table for is ExerciseAngina. 
+
+```{r}
+
+print(table("Exercise Angina" = heart_df$ExerciseAngina))
+
+```
+
+The Kaggle website reported that this variable only provided a binary option, so there does not appear to be any need to further analyze it. 
+
+We did not analyze ST_Slope because the variable is being dropped from the data set per the Homework5 instructions. 
 
 Summarize the data set with respect to the variable relationships to HeartDisease.
 
 ```{r}
 
+age_plot <- ggplot(heart_df, aes(x = HeartDisease, y = Age)) +
+  geom_boxplot(fill="#CC0000", aes(group = HeartDisease))
 
+print(age_plot)
 
 ```
+
+```{r}
+
+
+
+ggplot(heart_df, aes(x = HeartDisease, y = Sex, fill=Sex)) +
+  geom_bar(stat = "identity")
+```
+
+```{r}
+
+table(heart_df$HeartDisease, heart_df$ChestPainType)
+
+```
+
+
+
+
+
+
+
+
+
+
 
 2.1.2 Create a new variable that is a factor of HeartDisease, (1 = Yes, 0 = No) Remove the ST_Slope and HeartDisease variables.
 
