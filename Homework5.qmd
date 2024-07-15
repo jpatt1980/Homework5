@@ -3,6 +3,8 @@ title: "Homework 5 - Heart Disease Modeling"
 author: "Jason M. Pattison, ST 558-601, Summer 1 2024"
 format: html
 editor: visual
+editor_options: 
+  chunk_output_type: console
 ---
 
 # "Homework 5 - Heart Disease Modeling"
@@ -43,6 +45,9 @@ library(tree)
 library(randomForest)
 library(rgl) 
 library(ggplot2)
+library(class)
+library(rpart)
+library(gbm)
 
 ```
 
@@ -78,7 +83,7 @@ print(heart_df_na_summary)
 
 We see that there are no missing values in the data set.
 
-Next we will summarize the data frame to determine if there are any irregularities that need to be further investigated before generating our prediction models. Summarized graphs of the variables are being done with respect to HeartDisease in order to determine which ones will be suitable for prediction modeling. 
+Next we will summarize the data frame to determine if there are any irregularities that need to be further investigated before generating our prediction models. Summarized graphs of the variables are being done with respect to HeartDisease in order to determine which ones will be suitable for prediction modeling.
 
 ```{r data structure}
 
@@ -88,7 +93,7 @@ print(summary(heart_df))
 
 Review of the numeric variable summaries shows that there is an irregularity in the RestingBP data and that an irrgeularity may also exist in the Cholesterol data. For the five character variables, we generated graphic summaries that will be used to determine if the variable data requires further investigation for data cleaning or not.
 
-The irregularity in RestingBP is the summary information shows a minimum entry of 0.0. This value is highly unlikely unless the PT observed is already a corpse (or mannequin). First we will generate a histogram of the RestingBP values with regards to the HeartDisease's values of "0" for "Normal" and "1" for "Heart Disease" to determine if the RestingBP value is an outlier, and how many other outliers may be present. 
+The irregularity in RestingBP is the summary information shows a minimum entry of 0.0. This value is highly unlikely unless the PT observed is already a corpse (or mannequin). First we will generate a histogram of the RestingBP values with regards to the HeartDisease's values of "0" for "Normal" and "1" for "Heart Disease" to determine if the RestingBP value is an outlier, and how many other outliers may be present.
 
 ```{r}
 
@@ -99,46 +104,58 @@ ggplot(heart_df, aes(RestingBP)) +
   facet_wrap(~HeartDisease)
 
 ```
-The histograms shows that the "0" value in RestingBP is an outlier, and that it is the only one. The remaining RestingBP data models a fairly normal distribution. Because therer is only one outlier, it would be reasonable to remove it or replace the value with the mean of the remaining RestingBP values. 
+
+The histograms shows that the "0" value in RestingBP is an outlier, and that it is the only one. The remaining RestingBP data models a fairly normal distribution. Because there is only one outlier, it would be reasonable to remove it or replace the value with the mean of the remaining RestingBP values. RestingBP is a suitable variable for prediciton modeling. 
+
+```{r}
+
+adjusted_heart_df <- heart_df |>
+  filter(RestingBP != 0)
+
+adjusted_heart_df
+
+```
 
 [Healthline](%22https://www.healthline.com/health/serum-cholesterol#results%22) reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of Cholesterol showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with RestingBP, we will use a histogram to summarize the Cholesterol data
 
 ```{r}
 
-ggplot(heart_df, aes(Cholesterol)) +
+ggplot(adjusted_heart_df, aes(Cholesterol)) +
   geom_histogram(aes(y=..density..), binwidth=10, fill="#CC0000", color = "lightgray") +
   labs(title="Histogram of Cholesterol by Heart Disease", y="Density (# of PTs)") +
   stat_function(fun = dnorm, args = list(mean = mean(heart_df$Cholesterol), sd = sd(heart_df$Cholesterol))) +
   facet_wrap(~HeartDisease)
 
 ```
-The histogram shows that there are a substantial amount of outliers with Cholesterol levels of "0" in both groups. The graphical summary also shows that there are outliers in range of 450 to 600 of both subgroups. 
+
+The histogram shows that there are a substantial amount of outliers with Cholesterol levels of "0" in both groups. The graphical summary also shows that there are outliers in range of 450 to 600 of both subgroups.
 
 ```{r}
 
 chol_matrix <- list("Cholesterol is Zero" = summary(heart_df$Cholesterol == 0))
 
-chol_matrix
+print(chol_matrix)
 
 ```
 
-The `sum()` function determined that there are 172 entries with "0" reported for the PTs Cholesterol level. This accounts for approximately 19% of the overall data set, which is a large amount of the sample population. This use of "0" in this magnitude suggests it was intentional, and probably used instead of "NA" or some other coding to indicate a sample wasn't taken.
+The using "Cholesterol is zero" as our logic baseline, the `summary()` function determined that there are 172 entries with "0" reported for the PTs Cholesterol level. This accounts for approximately 19% of the overall data set, which is a large amount of the sample population. This use of "0" in this magnitude suggests it was intentional, and probably used instead of "NA" or some other coding to indicate a sample wasn't taken.
 
-However, substituting the mean of the remaining 81% of the Cholesterol levels for these values without knowing their distribution across the five data sources risks heavily biasing our prediction modeling to favor one group over another. Further summary analysis is required for assessing what to do with these observations. 
+However, substituting the mean of the remaining 81% of the Cholesterol levels for these values without knowing their distribution across the five data sources risks heavily biasing our prediction modeling to favor one group over another. Further summary analysis is required for assessing what to do with these observations.
 
 ```{r}
 
-ggplot(heart_df, aes(HeartDisease, Cholesterol)) +
+ggplot(adjusted_heart_df, aes(HeartDisease, Cholesterol)) +
   geom_boxplot(aes(group = HeartDisease), fill = "#CC0000") +
   scale_x_continuous(breaks = seq(0, 1, by = 1)) +
   labs(title="Boxplot of Heart Disease Subgroups vs Cholesterol")
 
 ```
+
 Review of the HeartDisease sub-group box and whisker plots shows that the Cholesterol values of "0" greatly affect the IQR of the "Heart Disease" subgroup while having minimal to no effect on the "Normal" subgroup. The Cholesterol values of "0" do not appear to have an affect on the median values of either subgroup as they both are near the overall group median of 223.
 
 The information provided by the three summary observations taken with respect to HeartDisease indicate that replacing the Cholesterol variable's values of "0" with the mean of the remaining Cholesterol values is reasonable after removing the outlying values that are greater than or equal to 450.
 
-First, we will create an adjsuted data frame that excludes the Cholesterol outliers that are greater than or equal to 450. 
+First, we will create an adjsuted data frame that excludes the Cholesterol outliers that are greater than or equal to 450.
 
 ```{r}
 
@@ -149,21 +166,13 @@ adjusted_heart_df
 
 ```
 
-Next, we will use the `na_if()` function to swap our "0" entries with "NA", then use the `mean()` function to replace the "NA" values with the mean of the remaining values. 
+Next, we will use the `na_if()` function to swap our "0" entries with "NA", then use the `mean()` function to replace the "NA" values with the mean of the remaining values. Then we will then use histogram plots to view the changes to the Cholestorol and Cholestorol with repsect to HeartDisease. 
 
 ```{r}
 
 adjusted_heart_df$Cholesterol <- na_if(adjusted_heart_df$Cholesterol, 0)
 
-summary(adjusted_heart_df)
-
-```
-
-```{r}
-
 adjusted_heart_df$Cholesterol[is.na(adjusted_heart_df$Cholesterol)] <- mean(adjusted_heart_df$Cholesterol, na.rm = TRUE)
-
-summary(adjusted_heart_df)
 
 ```
 
@@ -177,71 +186,101 @@ ggplot(adjusted_heart_df, aes(Cholesterol)) +
 
 ```
 
-
-
-Now that we have investigated the variables that first showed signs of needing addressed, we are going to continue analysis of the remaining variables
-
-Next we summarized the effect of Age on HeartDisease. 
+Review of the histograms show that our Cholesterol data maintained a normal distribution with the adjusted data centered on the mean. Next we will compare summary information between the original data and the adjusted data.
 
 ```{r}
 
-print(summary(heart_df))
+print(list("Original Heart Disease Cholesterol Summary" = summary(heart_df$Cholesterol)))
 
-print(summary(adjusted_heart_df))
+print(list("Adjusted Heart Disease Cholesterol Summary" = summary(adjusted_heart_df$Cholesterol)))
 
 ```
 
 
-Next we summarized the effect of Sex on HeartDisease.
+Review of the two summary tables show that there were small changes in the median and Q3 information. There were substantial changes in the Min, Q1, Mean, and Max values. These changes were expected after the adjustments to the Min and Max values. Cholestorl is a suitable variable for prediction modeling. 
+
+Now that we have investigated the variables that first showed signs of needing addressed, we are going to continue analysis of the remaining variables
+
+Next we summarized the effect of Age on HeartDisease.
 
 ```{r}
 
-heart_df_by_sex <- heart_df |>
+ggplot(adjusted_heart_df, aes(Age)) +
+  geom_histogram(aes(y=..density..), binwidth=5, fill="#CC0000", color = "lightgray") +
+  labs(title="Histogram of Age by Heart Disease", y="Density (# of PTs)") +
+  stat_function(fun = dnorm, args = list(mean = mean(adjusted_heart_df$Age), sd = sd(adjusted_heart_df$Age))) +
+  facet_grid(~HeartDisease)
+
+```
+Review of the histogram plots show that there is a difference in the subgroups where the median Age for the "Heart Disease" category is higher. There are no prevalent outliers in either subgroup. Age appears to be a suitable variable for prediction modeling.   
+
+Next we summarized the effect of Sex on HeartDisease using a bar plot.
+
+```{r}
+
+heart_df_by_sex <- adjusted_heart_df |>
   group_by(HeartDisease, Sex) |>
   summarize(count = n()) 
 
 ggplot(heart_df_by_sex, aes(HeartDisease, count, fill=Sex)) +
   geom_bar(stat = "identity") +
   scale_x_continuous(breaks = seq(0, 1, by = 1)) +
-  labs(title = "Heart Disease by Sex", y="# of PTs")
+  labs(title = "Bar Plot of Heart Disease by Sex", y="# of PTs")
 
 ```
 
-The bar plot shows that there are more males than females in both subgroups of Heart Disease, which indicates that the results of our prediciton models will be heavily biased towards males.To better understand this bias, we generated a contingency table of HeartDisease vs Sex. 
+The bar plot shows that there are more males than females in both subgroups of Heart Disease, which indicates that the results of our prediction models will be heavily biased towards males. To better understand this bias, we generated a contingency table of HeartDisease vs Sex.
 
 ```{r}
 
-list("Heart Disease by Sex" = table(heart_df$HeartDisease, heart_df$Sex))
+list("Heart Disease by Sex" = table(adjusted_heart_df$HeartDisease, adjusted_heart_df$Sex))
 
 ```
 
 The table confirms that there are more substantially more males in both HeartDisease groups than females. Using a scale factor of 50 PTs, males outnumber females in the study by a ratio of approximately 7:2. The table also shows that the odds of females having heart disease are approximately 1:3 while the odds of males having heart disease are approximately 9:5.
 
+Although the data is biased towards males, the female group accounts for 191 observations, which is approximately 21% of the data set. With this in mind, the female group observations should remain in the prediction model. 
+
 Next, we summarized Chest Pain Type using a bar plot.
 
 ```{r}
 
-heart_df_by_pain <- heart_df |>
+heart_df_by_pain <- adjusted_heart_df |>
   group_by(HeartDisease, ChestPainType) |>
   summarize(count = n())
 
 ggplot(heart_df_by_pain, aes(HeartDisease, count, fill=ChestPainType)) +
   geom_bar(stat = "identity", position = position_dodge()) +
   scale_x_continuous(breaks = seq(0, 1, by = 1)) +
-  labs(title = "Heart Disease by Chest Pain Type", y="# of PTs")
+  labs(title = "Bar Plot of Heart Disease by Chest Pain Type", y="# of PTs")
 
 ```
 
-The summary shows that the majority of PTs with heart disease were not experiencing chest pain (ASY). The summary also shows that the majority of PTs without heart disease were experiencing chest pain of some sort. Comparing these, it is suggestive that not having chest pain is an indicator of having heart disease. Because of this failed logic, ChestPainType does not appear to be a suitable predictor variable for our models. 
+The summary shows that the majority of PTs with heart disease were not experiencing chest pain (ASY). The summary also shows that the majority of PTs without heart disease were experiencing chest pain of some sort. Comparing these observations, it is suggestive that not having chest pain is an indicator of having heart disease. ChestPainType does not appear to be a suitable variable for our prediciton models based on this logic. 
 
-Next we summarized FastingBS with respect to HeartDisease. 
+Next we summarized FastingBS with respect to HeartDisease.
 
 ```{r}
 
+adj_heart_df_by_fastbs <- adjusted_heart_df |>
+  group_by(HeartDisease, FastingBS) |>
+  summarize(count = n())
 
+ggplot(adj_heart_df_by_fastbs, aes(HeartDisease, count, fill= FastingBS)) +
+  geom_bar(stat = "identity") +
+  scale_x_continuous(breaks = seq(0, 1, by = 1)) +
+  labs(title = "Bar Plot of Heart Disease by Fasting BS", y="# of PTs")
 
 ```
 
+Review of the summary shows that there is a larger number of PTs with fasting blood sugar levels above 120 mg/dl. There are also more PTs in the "Heart Disease" category of HeartDisease. Because of the population difference in HeartDisease, we will generate a contingent table to further analyze FastingBS and determine if it is suitable for remaining in the projection model. 
+
+```{r}
+
+list("Heart Disease by Fasting BS" = table(adjusted_heart_df$HeartDisease, adjusted_heart_df$FastingBS))
+
+```
+Using a scaling factor of 50, review of the table shows that the proportion of PTs in the "Normal" heart disease category with "FastingBS>120" is approximately 1:7 while the proportion of PTs in the "Heart Disease" heart disease category with "FastingBS>120" is approximately 3:7. This proportion increase suggests that FastingBS is suitable for prediction modeling. 
 
 Next we generated a summary table for Resting ECG with respect to the HeartDisease subgroups.
 
@@ -257,31 +296,49 @@ ggplot(heart_df_by_ecg, aes(HeartDisease, count, fill=RestingECG)) +
   labs(title = "Heart Disease by Resting ECG", y="# of PTs")
 
 ```
-The summary plot for Resting ECG shows that there were higher levels in each RestingECG category for PTs in the Heart Disease group vs the PTs in the Normal group. The distribution of the RestingECG categories stayed approximately the same, which is suggestive that the changes between the subgroups may be a result of there being more PTs with heart disease than those who are normal. We will generate a contingency table between HeartDisease and RestingECG to investigate this further. 
+
+The summary plot for Resting ECG shows that there were higher levels in each RestingECG category for PTs in the Heart Disease group vs the PTs in the Normal group. The distribution of the RestingECG categories stayed approximately the same, which is suggestive that the changes between the subgroups may be a result of there being more PTs with heart disease than those who are normal. We will generate a contingency table between HeartDisease and RestingECG to investigate this further.
 
 ```{r}
 
 print(list("Heart Disease by Resting ECG" = table(heart_df$HeartDisease, heart_df$RestingECG)))
 
 ```
-Recalling the HeartDisease as information from our data frame summary table, the mean for HeartDisease is "0.5534". This shows that there are more PTs with heart disease than not in the study. Looking at the contingency table between HeartDisease and RestingECG, we see that the majority of PTs in both categories reported "Normal". 
 
-Adding the LVH and ST RestingECG values together for the Normal HeartDisease category provided us with a "-Normal" value of 143 PTS. Combining the "-Normal" RestingECG catgories did not match or exceed the number of PTs who reported "Normal". 
+Recalling the HeartDisease information from our adjusted data frame summary table, 
 
-Adding the LVH and ST RestingECG values together for the Heart Disease HeartDisease category provided us with a "-Normal" value of 123 PTs. Combining the "-Normal" RestingECG catgories did not match or exceed the number of PTs who reported "Normal". 
+```{r}
+summary(adjusted_heart_df$HeartDisease)
+```
 
-Comparison of the "-Normal" and "Normal" data suggests that RestingECG is not a good variable for use in prediciton modeling. 
-
-Next we summarized MaxHR with respect to HeartDisease. 
+the mean for HeartDisease is "0.5527". This shows that there are more PTs with heart disease than not in the study. Looking at the contingency table between HeartDisease and RestingECG, we see that the majority of PTs in both categories reported "Normal". Due to the split of "-Normal" data into separate categories, we will generate a contingency table, add the values together, and determine suitability of the variable.
 
 ```{r}
 
-
+print(list("Heart Disease vs Resting ECG" = table(adjusted_heart_df$HeartDisease, adjusted_heart_df$RestingECG)))
 
 ```
 
+Adding the LVH and ST RestingECG values together for the "Normal" heart disease category provided us with a "-Normal" value of 143 PTS. This did not match or exceed the number of PTs observed having "Normal" resting ECGs.
 
-Next we summarized with respect to HeartDisease is ExerciseAngina.
+Adding the LVH and ST RestingECG values together for the "Heart Disease" heart disease category provided us with a "-Normal" value of 123 PTs. This did not match or exceed the number of PTs observed having "Normal" resting ECGs.
+
+Comparison of the "-Normal" and "Normal" data suggests that RestingECG is not a good variable for use in prediction modeling.
+
+Next we summarized MaxHR with respect to HeartDisease.
+
+```{r}
+
+ggplot(adjusted_heart_df, aes(MaxHR)) +
+  geom_histogram(aes(y=..density..), binwidth=10, fill="#CC0000", color = "lightgray") +
+  labs(title="Histogram of Max Heart Rate by Heart Disease", y="Density (# of PTs)") +
+  stat_function(fun = dnorm, args = list(mean = mean(adjusted_heart_df$MaxHR), sd = sd(adjusted_heart_df$MaxHR))) +
+  facet_grid(~HeartDisease)
+  
+```
+The summary graphics with respect to HeartDisease show that MaxHR has a generally normal distribution. When observed with respect to HeartDisease, the distribution of the "Normal" category tended to be higher than the "Heart Disease" category. MaxHR appears to be suitable for use in prediction modeling. 
+
+Next we summarized ExerciseAngina with respect to HeartDisease.
 
 ```{r}
 
@@ -295,16 +352,48 @@ ggplot(heart_df_by_ex_angina, aes(HeartDisease, count, fill= ExerciseAngina)) +
   labs(title = "Heart Disease by Exercise Angina", y="# of PTs")
 
 ```
-The summary graph show a change in the proportions between the Normal and Heart Disease groups. The proportion of exercised induced chest pain reported shifted from approximately 1:7 reporting chest pain to approximately 3:2 reporting chest pain. This data suggests that ExerciseAngina is a good variable for use in training our prediction model. 
 
-Finally, we summarized Oldpeak with respect to HeartDisease. 
+The summary graph show a change in the proportions between the Normal and Heart Disease groups. The proportion of exercised induced chest pain reported shifted from approximately 1:7 reporting chest pain to approximately 3:2 reporting chest pain. This data suggests that ExerciseAngina is a good variable for use in training our prediction model.
+
+Finally, we summarized Oldpeak with respect to HeartDisease.
 
 ```{r}
 
-
+ggplot(adjusted_heart_df, aes(Oldpeak)) +
+  geom_histogram(aes(y=..density..), binwidth=.1, fill="#CC0000", color = "lightgray") +
+  labs(title="Histogram of Oldpeak by Heart Disease", y="Density (# of PTs)") +
+  stat_function(fun = dnorm, args = list(mean = mean(adjusted_heart_df$Oldpeak), sd = sd(adjusted_heart_df$Oldpeak))) +
+  facet_grid(~HeartDisease)
 
 ```
+Histograms shows an fairly uniform distribution with a disproportionate number of observations having an Old Peak value of "0". However, unlike our Cholesterol variable, these values do not appear to be outleirs from the rest of the variable group. Generating a summary table of Oldpeak
 
+```{r}
+
+print(list("Old Peak value is Zero" = summary(adjusted_heart_df$Oldpeak == 0)))
+
+```
+shows that there are 364 occurrences of this value being selected, which accounts for approximately 40% of the data. This suggests that its use was intentional. Generating a box plot summary for the variable
+
+```{r}
+
+ggplot(adjusted_heart_df, aes(HeartDisease, Oldpeak)) +
+  geom_boxplot(fill="#CC0000") +
+  scale_x_continuous(breaks = seq(0, 1, by = 1)) +
+  labs(title = "Box Plot of Oldpeak", y="# of PTs")
+
+```
+confirms that the "0" values are not outliers in the overall data set, and they establish the Q1 value. A box plot of Oldpeak with reference to HeartDisease 
+
+```{r}
+
+ggplot(adjusted_heart_df, aes(HeartDisease, Oldpeak)) +
+  geom_boxplot(fill="#CC0000", aes(group = HeartDisease)) +
+  scale_x_continuous(breaks = seq(0, 1, by = 1)) +
+  labs(title = "Box Plot of Oldpeak by Heart Disease", y="# of PTs")
+
+```
+shows that the value "0" heavily influences the IQR of the "Normal" heart disease category. The value "0" has much less effect on the IQR of the "Heart Disease" heart disease category. This suggests that Oldpeak is suitable for inclusion in prediction modeling. 
 
 We did not analyze ST_Slope because the variable is being dropped from the data set per the Homework5 instructions.
 
@@ -312,101 +401,267 @@ We did not analyze ST_Slope because the variable is being dropped from the data 
 
 ```{r}
 
-
-
+adjusted_heart_df <- adjusted_heart_df |>
+  mutate(HeartDiseaseFct = factor(HeartDisease, levels = c(0, 1), labels = c("No", "Yes")), .before = 11) |>
+  select(Age:HeartDiseaseFct)
+  
 ```
 
 #### 2.1.3 Set-up the data frame to ensure the variables are all numeric predictors for kNN modeling later in the program.
 
+Set up dummy variables for ExerciseAngina, ChestPainType, and RestingECG using `dummyVars()` `and predict()`. Then we will convert the resulting table into a data frame for use in our predictive models. 
+
 ```{r}
+# Create the dummy variables
+dummies <- dummyVars(~ ., data = adjusted_heart_df)
 
+# Create the new data set. Is initially in a `list` format. 
+dummy_df <- predict(dummies, newdata = adjusted_heart_df)
 
+# Convert the list into a tibble for use
+modeling_df <- as_tibble((dummy_df))
+
+# Output the data frame
+print(modeling_df)
 
 ```
 
 ### 2.2 Split the data
 
+Now that we have a data frame with dummy variables for the variables with factor levels, we can split the data into training and test sets for use when developing our prediction models. 
+
+We previously identified that ChestPainType and RestingECG are not suitable for prediction modeling. Because of this, we will remove them then create our training our test subsets. 
+
 ```{r}
+# Remove ChestPainType from the data frame
+modeling_df <- modeling_df |>
+  relocate(starts_with("Heart")) |>
+  select(-starts_with("Chest"), -starts_with("RestingE"), -HeartDiseaseFct.No) 
+  
 
-
+modeling_df
 
 ```
+
+Our Training and Test data set rows are
+```{r}
+
+# Create Training and Test subsets of the data frame
+set.seed(1)
+modelingIndex <- createDataPartition(modeling_df$HeartDiseaseFct.Yes, p = .75, list = FALSE)
+modelingTrain <- modeling_df[modelingIndex, ]
+modelingTest <- modeling_df[-modelingIndex, ]
+
+
+print(list("Training Data" = modelingTrain, "Testing Data" = modelingTest))
+
+```
+
+Now that we have created our test and training sets, we will fit them to a knn prediction model. 
 
 ### 2.3 kNN
 
-2.3.1 Scale back the data frame to only have numeric variables for kNN modeling.
+#### 2.3.1 Determine variables to use in the kNN model. 
+
+All of the variables are numeric after creating the data frame with dummy variables for the levels of Sex, ExerciseAngina, and HeartDisease. We previously removed variables ChestPainType and RestingECG due to them not being good for predictive modeling. We are now ready to train and test our prediciton models. 
+
+We will assign the target variable as HeartDisease.Yes, and convert it to a factor in both our training and test sets for use in comparsion modeling. 
 
 ```{r}
 
+modelingTrain$HeartDiseaseFct.Yes <- factor(modelingTrain$HeartDiseaseFct.Yes)
 
+modelingTest$HeartDiseaseFct.Yes <- factor(modelingTest$HeartDiseaseFct.Yes)
 
 ```
 
-2.3.2. Train the model using 10 fold cross-validation with the number of steps being 3.
+#### 2.3.2. Train the model 
+
+We are using the `train()` function to generate our fit using the KNN method. Parameters we're using are 10 fold cross-validation with the number of steps being 3 and `tuneGrid` set so that the considered values for k are "1" through "40". 
 
 ```{r}
 
+knnFit <- train(HeartDiseaseFct.Yes ~ ., 
+                data = modelingTrain,
+                method = "knn",
+                preProcess = c("center", "scale"), 
+                trControl = trainControl(method = "repeatedcv",
+                                         number = 10, 
+                                         repeats = 3),
+                tuneGrid = data.frame(k = 1:40))
 
+print(knnFit)
 
 ```
+The kNN model chose k = 13 as the most accurate 
 
-Set the `tuneGrid` so that the values considered are k = 1:40. Check how well the chosen model does on the test set using the `confusionMatrix` function.
+#### 2.3.3. Check model accuracy
+
+Now that we have a model, we will check how well it does using the `confusionMatrix` function to analyze it against the test set. 
+
+```{r}
+
+knn_pred <- predict(knnFit, newdata = modelingTest)
+
+knn_accuracy <- confusionMatrix(knn_pred, modelingTest$HeartDiseaseFct.Yes)
+
+print(knn_accuracy)
+
+```
+`confusionMatrix` testing showed that our kNN model is approximately 81.06% accurate at predicting if a PT has Heart Disease or not. 
 
 ### 2.4 Logistic Regression
 
-2.4.1 Posit three different logistic regression models using the EDA from section 2.1. Because the `glm` function can handle factor and character type variables. do not need to include the dummy variables created in section 2.1.2
+#### 2.4.1 Posit three different logistic regression models using your EDA
+
+Using the EDA from section 2.1 we are going to generate regression models using the adjacent categories probability, Bayesian general linear model, and general linear model types. 
+
+First, we will need to create training and test sets without our dummy variables and rearrange the data frame to put variables we're going to remove. 
 
 ```{r}
 
+adjusted_heart_df <- adjusted_heart_df |>
+  relocate(HeartDiseaseFct, .before = 1) |>
+  relocate(ChestPainType, .after = Oldpeak) |>
+  relocate(RestingECG, .after = Oldpeak)
 
+set.seed(1)
+
+heart_index <- createDataPartition(adjusted_heart_df$HeartDiseaseFct,
+                                 p = 0.75,
+                                 list = FALSE)
+  
+heart_train <- adjusted_heart_df[heart_index, ]
+
+heart_test <- adjusted_heart_df[-heart_index, ]
+
+print(list("Heart Training Dimensions" = dim(heart_train), 
+           "Heart Test Dimensions" = dim(heart_test)))
 
 ```
 
-Fit the models on the training set. Use CV with the same parameters used in the kNN model. **Note to self: Pre-process the data or no???**
+Now, we will fit the models on the training set using CV with the same parameters used in the kNN model. 
+
+The first model is based on using ExerciseAngina as a predictor variable. The second model is based on using Oldpeak as a predictor variable. The third model uses all variables in the data frame. ExerciseAngina and Oldpeak are chosen as independent predictors because of the differences between the subgroups of HeartDisease. 
+```{r}
+# Use all variables
+mod1 <- train(HeartDiseaseFct ~ ExerciseAngina, 
+              data = heart_train,
+              method = "glm", 
+              preProcess = c("center", "scale"), 
+              trControl = trainControl(method = "repeatedcv",
+                                       number = 10, 
+                                       repeats = 3)
+)
+
+# Remove ChestPainType
+mod2 <- train(HeartDiseaseFct ~ Oldpeak, 
+              data = heart_train,
+              method = "glm", 
+              preProcess = c("center", "scale"), 
+              trControl = trainControl(method = "repeatedcv",
+                                       number = 10, 
+                                       repeats = 3)
+)
+
+# Remove ChestPainType and RestingECG
+mod3 <- train(HeartDiseaseFct ~ ., 
+              data = heart_train,
+              method = "glm", 
+              preProcess = c("center", "scale"), 
+              trControl = trainControl(method = "repeatedcv",
+                                       number = 10, 
+                                       repeats = 3)
+)
+
+
+print(data.frame(t(mod1$results), t(mod2$results), t(mod3$results)))
+
+```
+
+The best model of the three is model 3, the full model. Both ExerciseAngina and Oldpeak tested well as independent predictors with accurate rates of "73.24" and "71.93" respectively, but were beaten out by the full model accurate rate of "81.77" This is likely due not only to combining the strenght of these two predictors, but also the variables of Age, RestingBP, Cholesterol, and MaxHR which all showed noticeable shifts in their Medians when analyzed with respect to HeartDisease. 
+
+Now that we have chosen our model, we will check how well it does on the test set using the `confusionMatrix` function.
 
 ```{r}
 
+lr_pred <- predict(mod3, newdata = heart_test)
 
+lr_accuracy <- confusionMatrix(lr_pred, heart_test$HeartDiseaseFct)
 
-```
-
-**Identify the best model and provide a basic `summary` of it.**
-
-Check how well the chosen model does on the test set using the `confusionMatrix` function.
-
-```{r}
-
-
+print(lr_accuracy)
 
 ```
+`confusionMatrix` testing showed that our chosen logistic regression model is approximately 81.42% accurate at predicting if a PT has Heart Disease or not.
 
 ### 2.5 Tree Models
 
-2.5.1 Choose the variables of interest and use repeated 10 fold CV to select a best fit.
+#### 2.5.1 Choose variables of interest for tree modeling
 
--   classificaiton tree (use method = rpart: tuning parameter is cp, use values 1, 0.001, 0.002, ..., 0.1)
+The variables chosen for the following models include the variables not tested previously Age, RestingBP, and MaxHR. These variables appeared to be suitable for predicting HeartDisease during EDA, but were not used in the LR modeling. 
 
+For consistency, we will be using the same train and test subsets used in performing our logistic regression models. With these subsets, we will generate a classification tree, random forest tree, and a boosted tree using repeated 10 fold CV along with specified parameters in order to select a best fit.
+
+For our classification tree, we will be using method - "rpart" and tuning parameter "cp". We will assigning values "0" though "0.1" by "0.001" to "cp".  
 ```{r}
 
+heart_train$HeartDiseaseFct <- factor(heart_train$HeartDiseaseFct )
 
+heart_test$HeartDiseaseFct <- factor(heart_test$HeartDiseaseFct)
+
+class_train <- train(HeartDiseaseFct ~ Age + RestingBP + MaxHR, 
+                     data = heart_train, 
+                     method = "rpart", 
+                     trControl = trainControl(method = "repeatedcv",
+                                              number = 10),
+                     tuneGrid = data.frame(cp = seq(0, 0.1, by = 0.001))
+                     )
+
+print(class_train)
 
 ```
+The optimal model using "rpart" had a cp = 0.03 with a prediction accuracy of 65.50%
 
--   random forest (use method = rf: tuning parameter is mtry, use values of 1, 2, ..., \# of predictors) **bagging is a special case in this model** -
-
+For our random forest tree model, we will be using method = "rf" with mtry as the tuning parameter with the number of predictors for it's value. 
 ```{r}
 
+rf_train <- train(HeartDiseaseFct ~ Age + RestingBP + MaxHR, 
+                     data = heart_train, 
+                     method = "rf", 
+                     trControl = trainControl(method = "repeatedcv",
+                                              number = 10),
+                     tuneGrid = data.frame(mtry = c(1, 2, 3))
+                     )
 
+print(rf_train)
 
 ```
+The optimal model using "rf" was mtry = 1 with a prediction accuracy of 66.68%
+
 
 -   boosted tree (use method = gbm: tuning parameters are n.trees, interaction.depth, shrinkage, and n.minabsinnode). Use all combinations of n.trees of 25, 50, 100, and 200; interaction.depth of 1, 2, 3; shrinkage = 0.1; and nminobsinnode = 10.**Use `expand.grid` to create the data frame for `tuneGrid` and verbose = FALSE limits the output produced**.
 
+For our boosted tree model, we will be using method = "gbm" with n.trees, interaction.depth, shrinkage, and n.minobsinnode. 
 ```{r}
 
+boosted_train <- train(HeartDiseaseFct ~ Age + RestingBP + MaxHR, 
+                     data = heart_train, 
+                     method = "gbm", 
+                     trControl = trainControl(method = "repeatedcv",
+                                              number = 10),
+                     verbose = FALSE, 
+                     tuneGrid = expand.grid(n.trees = c(25, 50, 100, 200),
+                       interaction.depth = c(1, 2, 3), 
+                       shrinkage = 0.1,
+                       n.minobsinnode = 10
+                       )
+                     )
 
+print(boosted_train)
 
 ```
+The optimal model using "gbm" was the combination of n.trees = 25, interaction.depth = 1, shrinkage = 0.1, and n.minobsinnode = 10 with a prediction accuracy of 70.48%
+
 
 Check how each of the above chosen models do on the test set using the `confusionMatrix` function.
 
