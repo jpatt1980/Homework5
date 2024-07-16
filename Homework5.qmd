@@ -105,7 +105,7 @@ ggplot(heart_df, aes(RestingBP)) +
 
 ```
 
-The histograms shows that the "0" value in RestingBP is an outlier, and that it is the only one. The remaining RestingBP data models a fairly normal distribution. Because there is only one outlier, it would be reasonable to remove it or replace the value with the mean of the remaining RestingBP values. RestingBP is a suitable variable for prediciton modeling.
+The histograms shows that the "0" value in RestingBP is an outlier, and that it is the only one. The remaining RestingBP data models a fairly normal distribution in both subgroups of HeartDisease. There appears to be a greater PT density in the  140+ Resting PB range "Heart Disease" HeartDisease group. Because there is only one outlier, it would be reasonable to remove it or replace the value with the mean of the remaining RestingBP values. RestingBP appears to be a suitable variable for prediction modeling.
 
 ```{r Remove "missing" RestingBP}
 
@@ -116,7 +116,7 @@ adjusted_heart_df
 
 ```
 
-[Healthline](%22https://www.healthline.com/health/serum-cholesterol#results%22) reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of Cholesterol showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with RestingBP, we will use a histogram to summarize the Cholesterol data
+[Healthline]("https://www.healthline.com/health/serum-cholesterol#results") reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of Cholesterol showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with RestingBP, we will use a histogram to summarize the Cholesterol data
 
 ```{r Cholesterol by HeartDisease histograms}
 
