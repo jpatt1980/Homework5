@@ -168,7 +168,7 @@ adjusted_heart_df
 
 ```
 
-Next, we will use the `na_if()` function to swap our "0" entries with "NA", then use the `mean()` function to replace the "NA" values with the mean of the remaining values. Then we will then use histogram plots to view the changes to the Cholestorol and Cholestorol with repsect to HeartDisease.
+Next, we will use the `na_if()` function to swap our "0" entries with "NA", then use the `mean()` function to replace the "NA" values with the mean of the remaining values. After we completed these steps, we will re-summarize Cholesterol using a histogram plots to view the changes to Cholesterol with respect to HeartDisease.
 
 ```{r Replace 0s with Variable Mean}
 
@@ -188,7 +188,7 @@ ggplot(adjusted_heart_df, aes(Cholesterol)) +
 
 ```
 
-Review of the histograms show that our Cholesterol data maintained a normal distribution with the adjusted data centered on the mean. Next we will compare summary information between the original data and the adjusted data.
+Review of the histograms show that our Cholesterol data maintained a normal distribution with the adjusted data centered on the mean. Next we will compare Cholesterol summary information between the original data and the adjusted data.
 
 ```{r Cholesterol summary comparisons}
 
@@ -198,7 +198,9 @@ print(list("Adjusted Heart Disease Cholesterol Summary" = summary(adjusted_heart
 
 ```
 
-Review of the two summary tables show that there were small changes in the median and Q3 information. There were substantial changes in the Min, Q1, Mean, and Max values. These changes were expected after the adjustments to the Min and Max values. Cholesterol is a suitable variable for prediction modeling.
+Review of the two summary tables show that there were small changes in the median and Q3 information. There were substantial changes in the Min, Q1, Mean, and Max values. These changes were expected after the adjustments to the Min and Max values. 
+
+After imputing the mean for the zeros, it became more clear that the Cholesterol distribution was mostly below the median for the "Normal" HeartDisease group while it was  the appears to be a distinct difference in distribution of the Cholesteroal datat with respect to HeartDisease. Cholesterol appears to be suitable variable for prediction modeling.
 
 Now that we have investigated the variables that first showed signs of needing addressed, we are going to continue analysis of the remaining variables
 
