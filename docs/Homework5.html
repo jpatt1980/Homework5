@@ -308,7 +308,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 #   HeartDisease &lt;dbl&gt;</code></pre>
 </div>
 </div>
-<p><a href="&quot;https://www.healthline.com/health/serum-cholesterol#results&quot;">Healthline</a> reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of <strong>Cholesterol</strong> showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with <strong>RestingBP</strong>, we will use a histogram to summarize the <strong>Cholesterol</strong> data.</p>
+<p><strong>Healthline</strong><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of <strong>Cholesterol</strong> showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with <strong>RestingBP</strong>, we will use a histogram to summarize the <strong>Cholesterol</strong> data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(adjusted_heart_df, <span class="fu">aes</span>(Cholesterol)) <span class="sc">+</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y=</span>..density..), <span class="at">binwidth=</span><span class="dv">10</span>, <span class="at">fill=</span><span class="st">"#CC0000"</span>, <span class="at">color =</span> <span class="st">"lightgray"</span>) <span class="sc">+</span></span>
@@ -1357,14 +1357,23 @@ Accuracy 0.8281938 0.8141593 0.8097345</code></pre>
 </div>
 </div>
 <p>that there is no change in the accuracy rankings, but the Tree model’s accuracy had improved to 80.97% by including the variables that were previously omitted.</p>
+</section>
+</section>
+<section id="footnotes" class="level3">
+<h3 class="anchored" data-anchor-id="footnotes">Footnotes:</h3>
 
 
 </section>
 </section>
 </section>
-</section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Healthline. “https://www.healthline.com/health/serum-cholesterol#results”<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

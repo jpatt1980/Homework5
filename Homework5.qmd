@@ -116,7 +116,7 @@ adjusted_heart_df
 
 ```
 
-[Healthline](%22https://www.healthline.com/health/serum-cholesterol#results%22) reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of **Cholesterol** showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with **RestingBP**, we will use a histogram to summarize the **Cholesterol** data.
+**Healthline**[^1] reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of **Cholesterol** showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with **RestingBP**, we will use a histogram to summarize the **Cholesterol** data.
 
 ```{r Cholesterol by HeartDisease histograms}
 
@@ -791,3 +791,6 @@ print(list("Comparison of Full Prediction Models" = data.frame("kNN" = knn_accur
 ```
 
 that there is no change in the accuracy rankings, but the Tree model's accuracy had improved to 80.97% by including the variables that were previously omitted.
+
+### Footnotes: 
+[^1]: Healthline. "https://www.healthline.com/health/serum-cholesterol#results"
