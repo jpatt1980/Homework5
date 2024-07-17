@@ -148,36 +148,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>What is the purpose of using cross-validation when fitting a random forest model?</li>
 </ol>
 <blockquote class="blockquote">
-<p>The purpose of cross-validation is to ensure a prediction model chosen has a combination of parameters that provide the most accurate prediction without over-fitting to the training set.</p>
+<p>The purpose of cross-validation is to evaluate multiple combinations of prediction parameters to ensure a chosen prediction model has a combination of parameters that provide the most accurate prediction without over-fitting to the training set.</p>
 </blockquote>
 <ol start="2" type="1">
 <li>Describe the bagged tree algorithm.</li>
 </ol>
 <blockquote class="blockquote">
-<p>The bagged tree algorithm is where the sample data set has bootstrapped samples taken from it, decision trees generated from each sample, then the average of the decision trees determined to develop the prediction model.</p>
+<p>The bagged tree algorithm is where the sample data set has bootstrapped samples taken from it, decision trees generated from each sample, then the average of the decision tree outcomes is used to determine the prediction model.</p>
 </blockquote>
 <ol start="3" type="1">
 <li>What is meant by a general linear model?</li>
 </ol>
 <blockquote class="blockquote">
-<p>A general linear model is one where a variety of variable types can be analyzed on how well they predict a continuous variable of interest.</p>
+<p>A general linear model is one where a variety of variable types can be combined and analyzed on how well they predict the outcome of a continuous variable.</p>
 </blockquote>
 <ol start="4" type="1">
 <li>When fitting a multiple linear regression model, what does adding an interaction term do? That is, what does it allow the model to do differently as compared to when it is not included in the model?</li>
 </ol>
 <blockquote class="blockquote">
-<p>Adding an interaction term allows us to identify if the slopes of each variable’s predictors are independent or if one affects the other. When they are not used in a prediction model, it is assumed that the outcome of one variable is independent from the other predictors in the model.</p>
+<p>Adding an interaction term allows us to identify if the variables in a prediction model are indpenedent or if they are correlated. This allows for us to determine what variables, if any, should be removed from the prediction model.</p>
 </blockquote>
 <ol start="5" type="1">
 <li>Why do we split our data into a training and test set?</li>
 </ol>
 <blockquote class="blockquote">
-<p>We split data into a training and test set to ensure our model is not biased to the data set we’re using to develop the model. Otherwise we risk over-fitting to the data used to build the model, which will result in low accuracy of predicting how new data points will affect an outcome of interest.</p>
+<p>We split data into a training and test set to ensure our model is not biased to the data set we’re using to develop the model. Otherwise we risk over-fitting our prediction model to the data used to build it, which will result in low accuracy of predicting how new data points will affect an outcome.</p>
 </blockquote>
 </section>
 <section id="task-2-fitting-models" class="level2">
 <h2 class="anchored" data-anchor-id="task-2-fitting-models">Task 2: Fitting Models</h2>
-<p>The first thing we’ll need to do is establish the libraries required to run the code for each of the models we’re going to develop.</p>
+<p>The first thing we’ll need to do is establish the libraries required to run the code for each of the variable summaries and prediction models we’re going to develop.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
@@ -194,7 +194,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="quick-edadata-preparation" class="level3">
 <h3 class="anchored" data-anchor-id="quick-edadata-preparation">2.1 Quick EDA/Data Preparation</h3>
 <section id="read-in-heart.csv.-check-on-missingness-and-summarize-the-data-especially-with-respect-to-the-variable-relationships-to-heartdisease." class="level4">
-<h4 class="anchored" data-anchor-id="read-in-heart.csv.-check-on-missingness-and-summarize-the-data-especially-with-respect-to-the-variable-relationships-to-heartdisease.">2.1.1 Read in heart.csv. Check on missingness and summarize the data, especially with respect to the variable relationships to HeartDisease.</h4>
+<h4 class="anchored" data-anchor-id="read-in-heart.csv.-check-on-missingness-and-summarize-the-data-especially-with-respect-to-the-variable-relationships-to-heartdisease.">2.1.1 Read in heart.csv. Check on missingness and summarize the data, especially with respect to the variable relationships to <strong>HeartDisease</strong>.</h4>
 <p>First we will read the data set into R, and call the data frame <code>heart_df</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>heart_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://www4.stat.ncsu.edu/~online/datasets/heart.csv"</span>, </span>
@@ -240,7 +240,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>We see that there are no missing values in the data set.</p>
-<p>Next we will summarize the data frame to determine if there are any irregularities that need to be further investigated before generating our prediction models. Summarized graphs of the variables are being done with respect to HeartDisease in order to determine which ones will be suitable for prediction modeling.</p>
+<p>Next we will summarize the data frame to determine if there are any irregularities that need to be further investigated before generating our prediction models. Summarized graphs of the variables are being done with respect to <strong>HeartDisease</strong> in order to determine which ones will be suitable for prediction modeling.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">summary</span>(heart_df))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -267,8 +267,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
                     Max.   : 6.2000                      Max.   :1.0000  </code></pre>
 </div>
 </div>
-<p>Review of the numeric variable summaries shows that there is an irregularity in the RestingBP data and that an irrgeularity may also exist in the Cholesterol data. For the five character variables, we generated graphic summaries that will be used to determine if the variable data requires further investigation for data cleaning or not.</p>
-<p>The irregularity in RestingBP is the summary information shows a minimum entry of 0.0. This value is highly unlikely unless the PT observed is already a corpse (or mannequin). First we will generate a histogram of the RestingBP values with regards to the HeartDisease’s values of “0” for “Normal” and “1” for “Heart Disease” to determine if the RestingBP value is an outlier, and how many other outliers may be present.</p>
+<p>Review of the numeric variable summaries shows that there is an irregularity in the <strong>RestingBP</strong> data and that an irregularity may also exist in the Cholesterol data. For the five character variables, we generated graphic summaries that will be used to determine if the variable data requires further investigation for data cleaning or not.</p>
+<p>The irregularity in <strong>RestingBP</strong> is the summary information shows a minimum entry of 0.0. This value is highly unlikely under normal circumstances. First we will generate a histogram of the <strong>RestingBP</strong> values with regards to the <strong>HeartDisease</strong>’s values of “0” for “Normal” and “1” for “Heart Disease” to determine if the <strong>RestingBP</strong> value is an outlier, and how many other outliers may be present.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(heart_df, <span class="fu">aes</span>(RestingBP)) <span class="sc">+</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y=</span>..density..), <span class="at">binwidth=</span><span class="dv">10</span>, <span class="at">fill=</span><span class="st">"#CC0000"</span>, <span class="at">color =</span> <span class="st">"lightgray"</span>) <span class="sc">+</span></span>
@@ -283,7 +283,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>The histograms shows that the “0” value in RestingBP is an outlier, and that it is the only one. The remaining RestingBP data models a fairly normal distribution in both subgroups of HeartDisease. There appears to be a greater PT density in the 140+ Resting PB range “Heart Disease” HeartDisease group. Because there is only one outlier, it would be reasonable to remove it or replace the value with the mean of the remaining RestingBP values. RestingBP appears to be a suitable variable for prediction modeling.</p>
+<p>The histograms shows that the “0” value in <strong>RestingBP</strong> is an outlier, and that it is the only one. The remaining <strong>RestingBP</strong> data models a fairly normal distribution in both subgroups of <strong>HeartDisease</strong>. There appears to be a greater PT density in the 140+ Resting PB range “Heart Disease” <strong>HeartDisease</strong> group. Because there is only one outlier, it would be reasonable to remove it or replace the value with the mean of the remaining <strong>RestingBP</strong> values. <strong>RestingBP</strong> appears to be a suitable variable for prediction modeling.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>adjusted_heart_df <span class="ot">&lt;-</span> heart_df <span class="sc">|&gt;</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(RestingBP <span class="sc">!=</span> <span class="dv">0</span>)</span>
@@ -308,7 +308,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 #   HeartDisease &lt;dbl&gt;</code></pre>
 </div>
 </div>
-<p><a href="&quot;https://www.healthline.com/health/serum-cholesterol#results&quot;">Healthline</a> reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of Cholesterol showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with RestingBP, we will use a histogram to summarize the Cholesterol data</p>
+<p><a href="&quot;https://www.healthline.com/health/serum-cholesterol#results&quot;">Healthline</a> reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of <strong>Cholesterol</strong> showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with <strong>RestingBP</strong>, we will use a histogram to summarize the <strong>Cholesterol</strong> data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(adjusted_heart_df, <span class="fu">aes</span>(Cholesterol)) <span class="sc">+</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y=</span>..density..), <span class="at">binwidth=</span><span class="dv">10</span>, <span class="at">fill=</span><span class="st">"#CC0000"</span>, <span class="at">color =</span> <span class="st">"lightgray"</span>) <span class="sc">+</span></span>
@@ -325,7 +325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>The histogram shows that there are a substantial amount of outliers with Cholesterol levels of “0” in both groups. The graphical summary also shows that there are outliers in range of 450 to 600 of both subgroups.</p>
+<p>The histogram shows that there are a substantial amount of outliers with <strong>Cholesterol</strong> levels of “0” in both groups. The graphical summary also shows that there are outliers in range of 450 to 600 of both subgroups.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>chol_matrix <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">"Cholesterol is Zero"</span> <span class="ot">=</span> <span class="fu">summary</span>(heart_df<span class="sc">$</span>Cholesterol <span class="sc">==</span> <span class="dv">0</span>))</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -336,8 +336,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 logical     746     172 </code></pre>
 </div>
 </div>
-<p>The using “Cholesterol is zero” as our logic baseline, the <code>summary()</code> function determined that there are 172 entries with “0” reported for the PTs Cholesterol level. This accounts for approximately 19% of the overall data set, which is a large amount of the sample population. This use of “0” in this magnitude suggests it was intentional, and probably used instead of “NA” or some other coding to indicate a sample wasn’t taken.</p>
-<p>However, substituting the mean of the remaining 81% of the Cholesterol levels for these values without knowing their distribution across the five data sources risks heavily biasing our prediction modeling to favor one group over another. Further summary analysis is required for assessing what to do with these observations.</p>
+<p>The using “Cholesterol is zero” as our logic baseline, the <code>summary()</code> function determined that there are 172 entries with “0” reported for the PTs <strong>Cholesterol</strong> level. This accounts for approximately 19% of the overall data set, which is a large amount of the sample population. This use of “0” in this magnitude suggests it was intentional, and was likely used instead of “NA” or some other coding to indicate a sample wasn’t taken. Unfortunately, this is not specified on <strong>Healthline</strong>’s website.</p>
+<p>However, substituting the mean of the remaining 81% of the <strong>Cholesterol</strong> levels for these values without knowing their distribution across the five data sources risks heavily biasing our prediction modeling to favor one group over another. Further summary analysis is required for assessing what to do with these observations.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(adjusted_heart_df, <span class="fu">aes</span>(HeartDisease, Cholesterol)) <span class="sc">+</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">group =</span> HeartDisease), <span class="at">fill =</span> <span class="st">"#CC0000"</span>) <span class="sc">+</span></span>
@@ -351,9 +351,9 @@ logical     746     172 </code></pre>
 </div>
 </div>
 </div>
-<p>Review of the HeartDisease sub-group box and whisker plots shows that the Cholesterol values of “0” greatly affect the IQR of the “Heart Disease” subgroup while having minimal to no effect on the “Normal” subgroup. The Cholesterol values of “0” do not appear to have an affect on the median values of either subgroup as they both are near the overall group median of 223.</p>
-<p>The information provided by the three summary observations taken with respect to HeartDisease indicate that replacing the Cholesterol variable’s values of “0” with the mean of the remaining Cholesterol values is reasonable after removing the outlying values that are greater than or equal to 450.</p>
-<p>First, we will create an adjsuted data frame that excludes the Cholesterol outliers that are greater than or equal to 450.</p>
+<p>Review of the <strong>HeartDisease</strong> sub-group box and whisker plots shows that the <strong>Cholesterol</strong> values of “0” greatly affect the IQR of the “Heart Disease” subgroup while having minimal to no effect on the “Normal” subgroup. The <strong>Cholesterol</strong> values of “0” do not appear to have an affect on the median values of either subgroup as they both are near the overall group median of 223.</p>
+<p>The information provided by the three summary observations taken with respect to <strong>HeartDisease</strong> indicate that replacing the <strong>Cholesterol</strong> variable’s values of “0” with the mean of the remaining <strong>Cholesterol</strong> values is reasonable after removing the outlying values that are greater than or equal to 450.</p>
+<p>First, we will create an adjsuted data frame that excludes the <strong>Cholesterol</strong> outliers that are greater than or equal to 450.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>adjusted_heart_df <span class="ot">&lt;-</span> heart_df <span class="sc">|&gt;</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Cholesterol <span class="sc">&lt;=</span> <span class="dv">450</span>)</span>
@@ -378,7 +378,7 @@ logical     746     172 </code></pre>
 #   HeartDisease &lt;dbl&gt;</code></pre>
 </div>
 </div>
-<p>Next, we will use the <code>na_if()</code> function to swap our “0” entries with “NA”, then use the <code>mean()</code> function to replace the “NA” values with the mean of the remaining values. Then we will then use histogram plots to view the changes to the Cholestorol and Cholestorol with repsect to HeartDisease.</p>
+<p>Next, we will use the <code>na_if()</code> function to swap our “0” entries with “NA”, then use the <code>mean()</code> function to replace the “NA” values with the mean of the remaining values. After we completed these steps, we will re-summarize Cholesterol using a histogram plots to view the changes to <strong>Cholesterol</strong> with respect to <strong>HeartDisease</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>adjusted_heart_df<span class="sc">$</span>Cholesterol <span class="ot">&lt;-</span> <span class="fu">na_if</span>(adjusted_heart_df<span class="sc">$</span>Cholesterol, <span class="dv">0</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -398,7 +398,7 @@ logical     746     172 </code></pre>
 </div>
 </div>
 </div>
-<p>Review of the histograms show that our Cholesterol data maintained a normal distribution with the adjusted data centered on the mean. Next we will compare summary information between the original data and the adjusted data.</p>
+<p>Review of the histograms show that our <strong>Cholesterol</strong> data maintained a normal distribution with the adjusted data centered on the mean. Next we will compare <strong>Cholesterol</strong> summary information between the original data and the adjusted data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">list</span>(<span class="st">"Original Heart Disease Cholesterol Summary"</span> <span class="ot">=</span> <span class="fu">summary</span>(heart_df<span class="sc">$</span>Cholesterol)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -413,9 +413,10 @@ logical     746     172 </code></pre>
    85.0   214.0   241.7   241.7   265.8   417.0 </code></pre>
 </div>
 </div>
-<p>Review of the two summary tables show that there were small changes in the median and Q3 information. There were substantial changes in the Min, Q1, Mean, and Max values. These changes were expected after the adjustments to the Min and Max values. Cholesterol is a suitable variable for prediction modeling.</p>
+<p>Review of the two summary tables show that there were small changes in the median and Q3 information. There were substantial changes in the Min, Q1, Mean, and Max values. These changes were expected after the adjustments to the Min and Max values.</p>
+<p>After imputing the mean for the zeros, it became more clear that the <strong>Cholesterol</strong> distribution was mostly below the median for the “Normal” <strong>HeartDisease</strong> group while it was the appears to be a distinct difference in distribution of the <strong>Cholesteroal</strong> datat with respect to <strong>HeartDisease</strong>. <strong>Cholesterol</strong> appears to be suitable variable for prediction modeling.</p>
 <p>Now that we have investigated the variables that first showed signs of needing addressed, we are going to continue analysis of the remaining variables</p>
-<p>Next we summarized the effect of Age on HeartDisease.</p>
+<p>Next we summarized the effect of <strong>Age</strong> on <strong>HeartDisease</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(adjusted_heart_df, <span class="fu">aes</span>(Age)) <span class="sc">+</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y=</span>..density..), <span class="at">binwidth=</span><span class="dv">5</span>, <span class="at">fill=</span><span class="st">"#CC0000"</span>, <span class="at">color =</span> <span class="st">"lightgray"</span>) <span class="sc">+</span></span>
@@ -431,8 +432,8 @@ logical     746     172 </code></pre>
 </div>
 </div>
 </div>
-<p>Review of the histogram plots show that there is a difference in the subgroups where the median Age for the “Heart Disease” category is higher. There are no prevalent outliers in either subgroup. Age appears to be a suitable variable for prediction modeling.</p>
-<p>Next we summarized the effect of Sex on HeartDisease using a bar plot.</p>
+<p>Review of the histogram plots show that there is a difference in the subgroups where the median <strong>Age</strong> for the “Heart Disease” category is higher. There are no prevalent outliers in either subgroup. <strong>Age</strong> appears to be a suitable variable for prediction modeling.</p>
+<p>Next we summarized the effect of <strong>Sex</strong> on <strong>HeartDisease</strong> using a bar plot.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>heart_df_by_sex <span class="ot">&lt;-</span> adjusted_heart_df <span class="sc">|&gt;</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(HeartDisease, Sex) <span class="sc">|&gt;</span></span>
@@ -450,7 +451,7 @@ logical     746     172 </code></pre>
 </div>
 </div>
 </div>
-<p>The bar plot shows that there are more males than females in both subgroups of Heart Disease, which indicates that the results of our prediction models will be heavily biased towards males. To better understand this bias, we generated a contingency table of HeartDisease vs Sex.</p>
+<p>The bar plot shows that there are more males than females in both subgroups of <strong>HeartDisease</strong>, which indicates that the results of our prediction models will be heavily biased towards males. To better understand this bias, we generated a contingency table of <strong>HeartDisease</strong> vs Sex.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="st">"Heart Disease by Sex"</span> <span class="ot">=</span> <span class="fu">table</span>(adjusted_heart_df<span class="sc">$</span>HeartDisease, adjusted_heart_df<span class="sc">$</span>Sex))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -461,9 +462,9 @@ logical     746     172 </code></pre>
   1  50 453</code></pre>
 </div>
 </div>
-<p>The table confirms that there are more substantially more males in both HeartDisease groups than females. Using a scale factor of 50 PTs, males outnumber females in the study by a ratio of approximately 7:2. The table also shows that the odds of females having heart disease are approximately 1:3 while the odds of males having heart disease are approximately 9:5.</p>
+<p>The table confirms that there are more substantially more males in both <strong>HeartDisease</strong> groups than females. Using a scale factor of 50 PTs, males outnumber females in the study by a ratio of approximately 7:2. The table also shows that the odds of females having heart disease are approximately 1:3 while the odds of males having heart disease are approximately 9:5.</p>
 <p>Although the data is biased towards males, the female group accounts for 191 observations, which is approximately 21% of the data set. With this in mind, the female group observations should remain in the prediction model.</p>
-<p>Next, we summarized Chest Pain Type using a bar plot.</p>
+<p>Next, we summarized <strong>ChestPainType</strong> using a bar plot.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>heart_df_by_pain <span class="ot">&lt;-</span> adjusted_heart_df <span class="sc">|&gt;</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(HeartDisease, ChestPainType) <span class="sc">|&gt;</span></span>
@@ -481,8 +482,8 @@ logical     746     172 </code></pre>
 </div>
 </div>
 </div>
-<p>The summary shows that the majority of PTs with heart disease were not experiencing chest pain (ASY). The summary also shows that the majority of PTs without heart disease were experiencing chest pain of some sort. Comparing these observations, it is suggestive that not having chest pain is an indicator of having heart disease. ChestPainType does not appear to be a suitable variable for our prediciton models based on this logic.</p>
-<p>Next we summarized FastingBS with respect to HeartDisease.</p>
+<p>The summary shows that the majority of PTs with heart disease were not experiencing chest pain (ASY). The summary also shows that the majority of PTs without heart disease were experiencing chest pain of some sort. Comparing these observations, it is suggestive that not having chest pain is an indicator of having heart disease. <strong>ChestPainType</strong> does not appear to be a suitable variable for our prediction models based on this logic.</p>
+<p>Next we summarized <strong>FastingBS</strong> with respect to <strong>HeartDisease</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>adj_heart_df_by_fastbs <span class="ot">&lt;-</span> adjusted_heart_df <span class="sc">|&gt;</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(HeartDisease, FastingBS) <span class="sc">|&gt;</span></span>
@@ -500,7 +501,7 @@ logical     746     172 </code></pre>
 </div>
 </div>
 </div>
-<p>Review of the summary shows that there is a larger number of PTs with fasting blood sugar levels above 120 mg/dl. There are also more PTs in the “Heart Disease” category of HeartDisease. Because of the population difference in HeartDisease, we will generate a contingent table to further analyze FastingBS and determine if it is suitable for remaining in the projection model.</p>
+<p>Review of the summary shows that there is a larger number of PTs with fasting blood sugar levels above 120 mg/dl. There are also more PTs in the “Heart Disease” category of <strong>HeartDisease</strong>. Because of the population difference in <strong>HeartDisease</strong>, we will generate a contingency table to further analyze the differences in <strong>FastingBS</strong> to determine if it is suitable for remaining in the projection model.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="st">"Heart Disease by Fasting BS"</span> <span class="ot">=</span> <span class="fu">table</span>(adjusted_heart_df<span class="sc">$</span>HeartDisease, adjusted_heart_df<span class="sc">$</span>FastingBS))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -511,8 +512,8 @@ logical     746     172 </code></pre>
   1 335 168</code></pre>
 </div>
 </div>
-<p>Using a scaling factor of 50, review of the table shows that the proportion of PTs in the “Normal” heart disease category with “FastingBS&gt;120” is approximately 1:7 while the proportion of PTs in the “Heart Disease” heart disease category with “FastingBS&gt;120” is approximately 3:7. This proportion increase suggests that FastingBS is suitable for prediction modeling.</p>
-<p>Next we generated a summary table for Resting ECG with respect to the HeartDisease subgroups.</p>
+<p>Using a scaling factor of 50, review of the table shows that the proportion of PTs in the “Normal” <strong>HeartDisease</strong> category with “FastingBS&gt;120” is approximately 1:7 while the proportion of PTs in the “Heart Disease” <strong>HeartDisease</strong> category with “FastingBS&gt;120” is approximately 3:7. This proportion increase suggests that <strong>FastingBS</strong> is suitable for prediction modeling.</p>
+<p>Next we generated a summary table for <strong>RestingECG</strong> with respect to the <strong>HeartDisease</strong> subgroups.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>heart_df_by_ecg <span class="ot">&lt;-</span> heart_df <span class="sc">|&gt;</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(HeartDisease, RestingECG) <span class="sc">|&gt;</span></span>
@@ -525,12 +526,12 @@ logical     746     172 </code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Homework5_files/figure-html/HeartDisease by Resting ECG bar plot-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Homework5_files/figure-html/HeartDisease by RestingECG bar plot-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The summary plot for Resting ECG shows that there were higher levels in each RestingECG category for PTs in the Heart Disease group vs the PTs in the Normal group. The distribution of the RestingECG categories stayed approximately the same, which is suggestive that the changes between the subgroups may be a result of there being more PTs with heart disease than those who are normal. We will generate a contingency table between HeartDisease and RestingECG to investigate this further.</p>
+<p>The summary plot for <strong>RestingECG</strong> shows that there were higher levels in each <strong>RestingECG</strong> category for PTs in the “Heart Disease” group vs the PTs in the “Normal” group. The distribution of the <strong>RestingECG</strong> categories appears to have stayed approximately the same, which is suggestive that the changes between the subgroups may be a result of there being more PTs with “Heart Disease” observed than those who had “Normal” observed. We will generate a contingency table between <strong>HeartDisease</strong> and <strong>RestingECG</strong> to investigate this further.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">list</span>(<span class="st">"Heart Disease by Resting ECG"</span> <span class="ot">=</span> <span class="fu">table</span>(heart_df<span class="sc">$</span>HeartDisease, heart_df<span class="sc">$</span>RestingECG)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -541,7 +542,7 @@ logical     746     172 </code></pre>
   1 106    285 117</code></pre>
 </div>
 </div>
-<p>Recalling the HeartDisease information from our adjusted data frame summary table,</p>
+<p>Recalling the <strong>HeartDisease</strong> information from our adjusted data frame summary table,</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adjusted_heart_df<span class="sc">$</span>HeartDisease)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -549,12 +550,12 @@ logical     746     172 </code></pre>
  0.0000  0.0000  1.0000  0.5527  1.0000  1.0000 </code></pre>
 </div>
 </div>
-<p>the mean for HeartDisease is “0.5527”. This shows that there are more PTs with heart disease than not in the study. Looking at the contingency table between HeartDisease and RestingECG, we see that the majority of PTs in both categories reported “Normal”.</p>
-<p>Due to the split of “-Normal” data into separate categories, we will need to combine the “-Normal” observation data and assess if it is equal to or greater than the “Normal” observations in either subgroup of HeartDisease. We will do this using the information provided by the HeartDisease by RestingECG contingency table.</p>
-<p>Adding the LVH and ST RestingECG values together for the “Normal” heart disease category provided us with a “-Normal” value of 143 PTS. Using a scaling factor of 50, the proportion of “Normal” to “-Normal” is approximately 5:3. This proportion heavily favors the “Normal” RestingECG group.</p>
-<p>Adding the LVH and ST RestingECG values together for the “Heart Disease” heart disease category provided us with a “-Normal” value of 123 PTs. Using a scaling factor of 50, the proportion of “Normal” to “-Normal” is approximately 5:4. This proportion favors the “Normal” RestingECG group.</p>
-<p>While both HeartDisease subgroups are heavily influenced by “Normal” RestingECG observations, the change in proportions where the “Heart Disease” HeartDisese category is almost even with “Normal” suggests that RestingECG may be suitable for use in prediction modeling.</p>
-<p>Next we summarized MaxHR with respect to HeartDisease.</p>
+<p>the mean for <strong>HeartDisease</strong> is “0.5527”. This shows that there are more PTs with heart disease than not in the study, but overall the distribution is fairly even. Looking at the contingency table between <strong>HeartDisease</strong> and <strong>RestingECG</strong>, we see that the majority of PTs in both categories reported “Normal”.</p>
+<p>Due to the split of “-Normal” data into separate categories, we will need to combine the “-Normal” observation data and assess if it is equal to or greater than the “Normal” observations in either subgroup of <strong>HeartDisease</strong>. We will do this using the information provided by the <strong>HeartDisease</strong> by <strong>RestingECG</strong> contingency table.</p>
+<p>Adding the LVH and ST <strong>RestingECG</strong> values together for the “Normal” <strong>HeartDisease</strong> category provided us with a “-Normal” value of 143 PTS. Using a scaling factor of 50, the proportion of “Normal” to “-Normal” is approximately 5:3.</p>
+<p>Adding the LVH and ST <strong>RestingECG</strong> values together for the “Heart Disease” <strong>HeartDisease</strong> category provided us with a “-Normal” value of 123 PTs. Using a scaling factor of 50, the proportion of “Normal” to “-Normal” is approximately 5:4</p>
+<p>While both <strong>HeartDisease</strong> subgroups are heavily influenced by “Normal” <strong>RestingECG</strong> observations, the change in proportions where the “Heart Disease” <strong>HeartDisaese</strong> category is almost even with “Normal” suggests that <strong>RestingECG</strong> may be suitable for use in prediction modeling.</p>
+<p>Next we summarized <strong>MaxHR</strong> with respect to <strong>HeartDisease</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(adjusted_heart_df, <span class="fu">aes</span>(MaxHR)) <span class="sc">+</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y=</span>..density..), <span class="at">binwidth=</span><span class="dv">10</span>, <span class="at">fill=</span><span class="st">"#CC0000"</span>, <span class="at">color =</span> <span class="st">"lightgray"</span>) <span class="sc">+</span></span>
@@ -564,13 +565,13 @@ logical     746     172 </code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Homework5_files/figure-html/MaxHR by HeartDisese histogram-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Homework5_files/figure-html/MaxHR by HeartDisease histogram-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The summary graphics with respect to HeartDisease show that MaxHR has a generally normal distribution. When observed with respect to HeartDisease, the distribution of the “Normal” category tended to be higher than the “Heart Disease” category. MaxHR appears to be suitable for use in prediction modeling.</p>
-<p>Next we summarized ExerciseAngina with respect to HeartDisease.</p>
+<p>The summary graphics with respect to <strong>HeartDisease</strong> show that <strong>MaxHR</strong> has a generally normal distribution. When observed with respect to <strong>HeartDisease</strong>, the distribution of the “Normal” category tended to be higher than the “Heart Disease” category. <strong>MaxHR</strong> appears to be suitable for use in prediction modeling.</p>
+<p>Next we summarized <strong>ExerciseAngina</strong> with respect to <strong>HeartDisease</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>heart_df_by_ex_angina <span class="ot">&lt;-</span> heart_df <span class="sc">|&gt;</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(HeartDisease, ExerciseAngina) <span class="sc">|&gt;</span></span>
@@ -588,8 +589,8 @@ logical     746     172 </code></pre>
 </div>
 </div>
 </div>
-<p>The summary graph show a change in the proportions between the Normal and Heart Disease groups. The proportion of exercised induced chest pain reported shifted from approximately 1:7 reporting chest pain to approximately 3:2 reporting chest pain. This data suggests that ExerciseAngina is a good variable for use in training our prediction model.</p>
-<p>Finally, we summarized Oldpeak with respect to HeartDisease.</p>
+<p>The summary graph show a change in the proportions between the “Normal” and “Heart Disease” groups. The proportion of exercised induced chest pain reported shifted from approximately 1:7 reporting chest pain to approximately 3:2 reporting chest pain. This data suggests that <strong>ExerciseAngina</strong> is a good variable for use in training our prediction model.</p>
+<p>Finally, we summarized <strong>Oldpeak</strong> with respect to <strong>HeartDisease</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(adjusted_heart_df, <span class="fu">aes</span>(Oldpeak)) <span class="sc">+</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y=</span>..density..), <span class="at">binwidth=</span>.<span class="dv">1</span>, <span class="at">fill=</span><span class="st">"#CC0000"</span>, <span class="at">color =</span> <span class="st">"lightgray"</span>) <span class="sc">+</span></span>
@@ -604,7 +605,7 @@ logical     746     172 </code></pre>
 </div>
 </div>
 </div>
-<p>Histograms shows an fairly uniform distribution with a disproportionate number of observations having an Old Peak value of “0”. However, unlike our Cholesterol variable, these values do not appear to be outleirs from the rest of the variable group. Generating a summary table of Oldpeak</p>
+<p>The histograms show a fairly uniform distribution with a disproportionate number of observations having an <strong>Oldpeak</strong> value of “0”. However, unlike our <strong>Cholesterol</strong> variable, these values do not appear to be outleirs from the rest of the variable group. Generating a summary table of <strong>Oldpeak</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">list</span>(<span class="st">"Old Peak value is Zero"</span> <span class="ot">=</span> <span class="fu">summary</span>(adjusted_heart_df<span class="sc">$</span>Oldpeak <span class="sc">==</span> <span class="dv">0</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -627,7 +628,7 @@ logical     546     364 </code></pre>
 </div>
 </div>
 </div>
-<p>confirms that the “0” values are not outliers in the overall data set, and they establish the Q1 value. A box plot of Oldpeak with reference to HeartDisease</p>
+<p>confirms that the “0” values are not outliers in the overall data set, and they establish the Q1 value. A box plot of <strong>Oldpeak</strong> with reference to <strong>HeartDisease</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(adjusted_heart_df, <span class="fu">aes</span>(HeartDisease, Oldpeak)) <span class="sc">+</span></span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill=</span><span class="st">"#CC0000"</span>, <span class="fu">aes</span>(<span class="at">group =</span> HeartDisease)) <span class="sc">+</span></span>
@@ -641,11 +642,11 @@ logical     546     364 </code></pre>
 </div>
 </div>
 </div>
-<p>shows that the value “0” heavily influences the IQR of the “Normal” heart disease category. The value “0” has much less effect on the IQR of the “Heart Disease” heart disease category. This suggests that Oldpeak is suitable for inclusion in prediction modeling.</p>
-<p>We did not analyze ST_Slope because the variable is being dropped from the data set per the Homework5 instructions.</p>
+<p>shows that the value “0” heavily influences the IQR of the “Normal” <strong>HeartDisease</strong> category. The value “0” has much less effect on the IQR of the “Heart Disease” <strong>HeartDisease</strong> category. This suggests that **Oldpeak* is suitable for inclusion in prediction modeling.</p>
+<p>We did not analyze <strong>ST_Slope</strong> because the variable is being dropped from the data set per the Homework5 instructions.</p>
 </section>
 <section id="create-a-new-variable-that-is-a-factor-of-heartdisease-1-yes-0-no-remove-the-st_slope-and-heartdisease-variables." class="level4">
-<h4 class="anchored" data-anchor-id="create-a-new-variable-that-is-a-factor-of-heartdisease-1-yes-0-no-remove-the-st_slope-and-heartdisease-variables.">2.1.2 Create a new variable that is a factor of HeartDisease, (1 = Yes, 0 = No) Remove the ST_Slope and HeartDisease variables.</h4>
+<h4 class="anchored" data-anchor-id="create-a-new-variable-that-is-a-factor-of-heartdisease-1-yes-0-no-remove-the-st_slope-and-heartdisease-variables.">2.1.2 Create a new variable that is a factor of <strong>HeartDisease</strong>, (1 = Yes, 0 = No) Remove the ST_Slope and <strong>HeartDisease</strong> variables.</h4>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>adjusted_heart_df <span class="ot">&lt;-</span> adjusted_heart_df <span class="sc">|&gt;</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">HeartDiseaseFct =</span> <span class="fu">factor</span>(HeartDisease, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>)), <span class="at">.before =</span> <span class="dv">11</span>) <span class="sc">|&gt;</span></span>
@@ -654,7 +655,7 @@ logical     546     364 </code></pre>
 </section>
 <section id="set-up-the-data-frame-to-ensure-the-variables-are-all-numeric-predictors-for-knn-modeling-later-in-the-program." class="level4">
 <h4 class="anchored" data-anchor-id="set-up-the-data-frame-to-ensure-the-variables-are-all-numeric-predictors-for-knn-modeling-later-in-the-program.">2.1.3 Set-up the data frame to ensure the variables are all numeric predictors for kNN modeling later in the program.</h4>
-<p>Set up dummy variables for ExerciseAngina, ChestPainType, and RestingECG using <code>dummyVars()</code> <code>and predict()</code>. Then we will convert the resulting table into a data frame for use in our predictive models.</p>
+<p>Set up dummy variables for <strong>ExerciseAngina</strong>, <strong>ChestPainType</strong>, and <strong>RestingECG</strong> using <code>dummyVars()</code> <code>and predict()</code>. Then we will convert the resulting table into a data frame for use in our predictive models.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the dummy variables</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>dummies <span class="ot">&lt;-</span> <span class="fu">dummyVars</span>(<span class="sc">~</span> ., <span class="at">data =</span> adjusted_heart_df)</span>
@@ -694,12 +695,11 @@ logical     546     364 </code></pre>
 <section id="split-the-data" class="level3">
 <h3 class="anchored" data-anchor-id="split-the-data">2.2 Split the data</h3>
 <p>Now that we have a data frame with dummy variables for the variables with factor levels, we can split the data into training and test sets for use when developing our prediction models.</p>
-<p>We previously identified that ChestPainType and RestingECG are not suitable for prediction modeling. Because of this, we will remove them then create our training our test subsets.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove ChestPainType, RestingECG, and HeartDisese.No from the data frame</span></span>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove from the data frame</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="co"># HeartDisease.No is being removed because it is the inverse of the variable of</span></span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="co"># HeartDisease.Yes which we are using as the predicted variable. </span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="co"># HeartDiseaseFct.No is being removed because it is the inverse of the variable </span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="co"># HeartDiseaseFct.Yes which we are using as the predicted variable. </span></span>
 <span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>modeling_df <span class="ot">&lt;-</span> modeling_df <span class="sc">|&gt;</span></span>
 <span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(<span class="fu">starts_with</span>(<span class="st">"Heart"</span>)) <span class="sc">|&gt;</span></span>
@@ -760,8 +760,8 @@ $`Testing Data`
 <h3 class="anchored" data-anchor-id="knn">2.3 kNN</h3>
 <section id="determine-variables-to-use-in-the-knn-model." class="level4">
 <h4 class="anchored" data-anchor-id="determine-variables-to-use-in-the-knn-model.">2.3.1 Determine variables to use in the kNN model.</h4>
-<p>All of the variables are numeric after creating the data frame with dummy variables for the levels of Sex, ExerciseAngina, and HeartDisease. We previously removed variables ChestPainType and RestingECG due to them not being good for predictive modeling. We are now ready to train and test our prediction models.</p>
-<p>We will assign the target variable as HeartDisease.Yes, and convert it to a factor in both our training and test sets for use in comparison modeling.</p>
+<p>All of the variables are numeric after creating the data frame with dummy variables for the levels of <strong>Sex</strong>, <strong>ChestPainType</strong>, <strong>RestingECG</strong>, <strong>ExerciseAngina</strong>, and <strong>HeartDisease</strong>. We are now ready to train and test our prediction models.</p>
+<p>We will assign the target variable as <strong>HeartDisease.Yes</strong>, and convert it to a factor in both our training and test sets for use in comparison modeling.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>modelingTrain<span class="sc">$</span>HeartDiseaseFct.Yes <span class="ot">&lt;-</span> <span class="fu">factor</span>(modelingTrain<span class="sc">$</span>HeartDiseaseFct.Yes)</span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -848,14 +848,16 @@ The final value used for the model was k = 9.</code></pre>
 <h4 class="anchored" data-anchor-id="check-model-accuracy">2.3.3. Check model accuracy</h4>
 <p>Now that we have a model, we will check how well it does using the <code>confusionMatrix</code> function to analyze it against the test set.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate model prediction against the test data set</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>knn_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(knnFit, <span class="at">newdata =</span> modelingTest)</span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Validate the accuracy of the prediction against the test data set </span></span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>knn_accuracy <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(knn_pred, modelingTest<span class="sc">$</span>HeartDiseaseFct.Yes)</span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Output results</span></span>
-<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(knn_accuracy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate model prediction against the test data set</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>knn_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(knnFit, <span class="at">newdata =</span> modelingTest)</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Validate the accuracy of the prediction against the test data set </span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>knn_accuracy <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(knn_pred, modelingTest<span class="sc">$</span>HeartDiseaseFct.Yes)</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Output results</span></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(knn_accuracy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Confusion Matrix and Statistics
 
@@ -886,7 +888,7 @@ Prediction   0   1
                                           </code></pre>
 </div>
 </div>
-<p><code>confusionMatrix</code> testing showed that our kNN model is approximately 81.06% accurate at predicting if a PT has Heart Disease or not. This accuracy is higher than what our model accuracy generated during training.</p>
+<p><code>confusionMatrix</code> testing showed that our kNN model is approximately 82.82% accurate at predicting if a PT has Heart Disease or not. This accuracy is higher than the model accuracy generated during training.</p>
 </section>
 </section>
 <section id="logistic-regression" class="level3">
@@ -926,7 +928,7 @@ $`Heart Test Dimensions`
 </div>
 </div>
 <p>Now, we will fit the models on the training set using CV with the same parameters used in the kNN model.</p>
-<p>The first model is based on using ExerciseAngina as a predictor variable. The second model is based on using Oldpeak as a predictor variable. The third model uses all variables in the data frame. ExerciseAngina and Oldpeak are chosen as independent predictors because of the differences between the subgroups of HeartDisease.</p>
+<p>The first model is based on using <strong>ExerciseAngina</strong> as a predictor variable. The second model is based on using <strong>ExerciseAngina</strong> and <strong>Oldpeak</strong> as predictor variables. The third model uses all variables in the data frame.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>) <span class="co">#ensures reproducibility </span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -971,8 +973,8 @@ AccuracySD 0.05003336 0.05936164 0.05221871
 KappaSD    0.09532202  0.1175836  0.1056164</code></pre>
 </div>
 </div>
-<p>The best model of the three is model 3, the full model. ExerciseAngina tested well as an independent predictor with an accuracy rate of 73.24%. Adding Oldpeak only slightly improved the prediction model to an accuracy rate of 76.26% respectively, but were beaten out by the full model accurate rate of 81.77%.</p>
-<p>The full model doing the best was not unexpected. There are several variables that appeared to influence HeartDisease. What was surprising is adding the remaining variables only increased the accuracy by “5.22%”.</p>
+<p>The best model of the three is model 3, the full model. <strong>ExerciseAngina</strong> tested well as an independent predictor with an accuracy rate of 73.24%. Adding <strong>Oldpeak</strong> only slightly improved the prediction model to an accuracy rate of 76.26% respectively, but the combination of the two variables were beaten out by the full model accurate rate of 81.49%.</p>
+<p>The full model doing the best was not unexpected. There are several variables that appeared to influence <strong>HeartDisease</strong> during EDA. What was surprising is adding the remaining variables only increased the accuracy by “5.22%”.</p>
 <p>Now that we have chosen our model, we will check how well it does on the test set using the <code>confusionMatrix</code> function.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>) <span class="co">#ensures reproducibility </span></span>
@@ -1015,14 +1017,14 @@ Prediction  No Yes
                                           </code></pre>
 </div>
 </div>
-<p><code>confusionMatrix</code> testing showed that our chosen logistic regression model is approximately 81.42% accurate at predicting if a PT has Heart Disease or not.</p>
+<p><code>confusionMatrix</code> testing showed that our chosen logistic regression model is approximately 81.42% accurate at predicting if a PT has “Heart Disease” or not.</p>
 </section>
 </section>
 <section id="tree-models" class="level3">
 <h3 class="anchored" data-anchor-id="tree-models">2.5 Tree Models</h3>
 <section id="choose-variables-of-interest-for-tree-modeling" class="level4">
 <h4 class="anchored" data-anchor-id="choose-variables-of-interest-for-tree-modeling">2.5.1 Choose variables of interest for tree modeling</h4>
-<p>The variables chosen for the following models include the variables not tested previously Age, RestingBP, and MaxHR. These variables appeared to be suitable for predicting HeartDisease during EDA, but were not used in the LR modeling.</p>
+<p>The variables chosen for the tree models are: <strong>Age</strong>, <strong>RestingBP</strong>, and <strong>MaxHR</strong>. These variables appeared to be suitable for predicting <strong>HeartDisease</strong> during EDA, but were not used in the LR modeling.</p>
 <p>For consistency, we will be using the same train and test subsets used in performing our logistic regression models. With these subsets, we will generate a classification tree, random forest tree, and a boosted tree using repeated 10 fold CV along with specified parameters in order to select a best fit.</p>
 <p>For our classification tree, we will be using method - “rpart” and tuning parameter “cp”. We will assign values “0” though “0.1” by “0.001” to “cp”.</p>
 <div class="cell">
@@ -1161,7 +1163,7 @@ Accuracy was used to select the optimal model using the largest value.
 The final value used for the model was cp = 0.018.</code></pre>
 </div>
 </div>
-<p>The optimal model using “rpart” had a cp = 0.03 with a prediction accuracy of 65.50%</p>
+<p>The optimal model using “rpart” had a cp = 0.018 with a prediction accuracy of 70.04%</p>
 <p>For our random forest tree model, we will be using method = “rf” with mtry as the tuning parameter with the number of predictors for it’s value.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
@@ -1196,7 +1198,7 @@ Accuracy was used to select the optimal model using the largest value.
 The final value used for the model was mtry = 1.</code></pre>
 </div>
 </div>
-<p>The optimal model using “rf” was mtry = 1 with a prediction accuracy of 66.68%</p>
+<p>The optimal model using “rf” was mtry = 1 with a prediction accuracy of 66.51%</p>
 <p>For our boosted tree model, we will be using method = “gbm” with n.trees, interaction.depth, shrinkage, and n.minobsinnode.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
@@ -1249,61 +1251,40 @@ The final values used for the model were n.trees = 25, interaction.depth =
  3, shrinkage = 0.1 and n.minobsinnode = 10.</code></pre>
 </div>
 </div>
-<p>The optimal model using “gbm” was the combination of n.trees = 25, interaction.depth = 3, shrinkage = 0.1, and n.minobsinnode = 10 with a prediction accuracy of 70.48%</p>
+<p>The optimal model using “gbm” was the combination of n.trees = 25, interaction.depth = 3, shrinkage = 0.1, and n.minobsinnode = 10 with a prediction accuracy of 70.46%</p>
 <p>Check how each of the above chosen models do on the test set using the <code>confusionMatrix</code> function.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
 <span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate model predictions against the test data set</span></span>
 <span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>rpart_train_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(rpart_train, <span class="at">newdata =</span> heart_test)</span>
-<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a><span class="co">#rf_train_pred &lt;- predict(rf_train, newdata = heart_test)</span></span>
-<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a><span class="co">#gbm_train_pred &lt;- predict(boosted_train, newdata = heart_test)</span></span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>rf_train_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf_train, <span class="at">newdata =</span> heart_test)</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>gbm_train_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(gbm_train, <span class="at">newdata =</span> heart_test)</span>
 <span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Validate the accuracy of the prediction against the test data set</span></span>
 <span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>rpart_accuracy <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(rpart_train_pred, heart_test<span class="sc">$</span>HeartDiseaseFct)</span>
-<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a><span class="co">#rf_accuracy &lt;- confusionMatrix(rf_train_pred, heart_test$HeartDiseaseFct)</span></span>
-<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a><span class="co">#gbm_accuracy &lt;- confusionMatrix(gbm_train_pred, heart_test$HeartDiseaseFct)</span></span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a>rf_accuracy <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(rf_train_pred, heart_test<span class="sc">$</span>HeartDiseaseFct)</span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a>gbm_accuracy <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(gbm_train_pred, heart_test<span class="sc">$</span>HeartDiseaseFct)</span>
 <span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Frame the results for comparison</span></span>
-<span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a><span class="co">#regTrees &lt;- data.frame(rpart_accuracy$overall, rf_accuracy$overall, boosted_accuracy$overall)</span></span>
+<span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a>regTrees <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">"RPart"</span> <span class="ot">=</span> rpart_accuracy<span class="sc">$</span>overall, <span class="st">"RF"</span> <span class="ot">=</span> rf_accuracy<span class="sc">$</span>overall, <span class="st">"GBM"</span> <span class="ot">=</span>gbm_accuracy<span class="sc">$</span>overall)</span>
 <span id="cb68-17"><a href="#cb68-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb68-18"><a href="#cb68-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Output the results</span></span>
-<span id="cb68-19"><a href="#cb68-19" aria-hidden="true" tabindex="-1"></a><span class="co">#print(regTrees)</span></span>
-<span id="cb68-20"><a href="#cb68-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-21"><a href="#cb68-21" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rpart_accuracy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb68-19"><a href="#cb68-19" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(regTrees)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Confusion Matrix and Statistics
-
-          Reference
-Prediction  No Yes
-       No   64  23
-       Yes  37 102
-                                          
-               Accuracy : 0.7345          
-                 95% CI : (0.6719, 0.7909)
-    No Information Rate : 0.5531          
-    P-Value [Acc &gt; NIR] : 1.403e-08       
-                                          
-                  Kappa : 0.4557          
-                                          
- Mcnemar's Test P-Value : 0.09329         
-                                          
-            Sensitivity : 0.6337          
-            Specificity : 0.8160          
-         Pos Pred Value : 0.7356          
-         Neg Pred Value : 0.7338          
-             Prevalence : 0.4469          
-         Detection Rate : 0.2832          
-   Detection Prevalence : 0.3850          
-      Balanced Accuracy : 0.7248          
-                                          
-       'Positive' Class : No              
-                                          </code></pre>
+<pre><code>                      RPart           RF          GBM
+Accuracy       7.345133e-01 6.991150e-01 7.300885e-01
+Kappa          4.557277e-01 3.855258e-01 4.493089e-01
+AccuracyLower  6.718851e-01 6.347672e-01 6.672210e-01
+AccuracyUpper  7.908762e-01 7.581524e-01 7.868104e-01
+AccuracyNull   5.530973e-01 5.530973e-01 5.530973e-01
+AccuracyPValue 1.403187e-08 4.852657e-06 3.139748e-08
+McnemarPValue  9.328996e-02 2.750924e-01 3.056959e-01</code></pre>
 </div>
 </div>
-<p>Comparing our three regression tree models after processing them through the <code>confusionMatrix</code> function shows that the rpart regression tree method had the highest level of accuracy at 73.45%, closely followed by the “gbm” regression tree method with an accuracy level of 71.68%.</p>
+<p>Comparing our three regression tree models after processing them through the <code>confusionMatrix</code> function shows that the rpart regression tree method had the highest level of accuracy at 73.45%, closely followed by the “gbm” regression tree method with an accuracy level of 73.01%.</p>
 </section>
 </section>
 <section id="wrap-up" class="level3">
@@ -1312,22 +1293,14 @@ Prediction  No Yes
 <h4 class="anchored" data-anchor-id="which-model-overall-did-the-best-job-in-terms-of-accuracy-on-the-test-set">Which model overall did the best job (in terms of accuracy) on the test set?</h4>
 <p>When doing a side by side comparison of the <code>confusionMatrix</code> generated accuracy rates of the three selected model types,</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"kNN"</span>, <span class="st">"LogRegression"</span>, <span class="st">"Tree"</span>)</span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>accuracy <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.8282</span>, <span class="fl">0.8142</span>, <span class="fl">0.7345</span>)</span>
-<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(model, accuracy)</span>
-<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">list</span>(<span class="st">"Comparison of Prediction Models"</span> <span class="ot">=</span> comparison))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">list</span>(<span class="st">"Comparison of Full Prediction Models"</span> <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="st">"kNN"</span> <span class="ot">=</span> knn_accuracy<span class="sc">$</span>overall[<span class="dv">1</span>], <span class="st">"LogReg"</span> <span class="ot">=</span> lr_accuracy<span class="sc">$</span>overall[<span class="dv">1</span>], <span class="st">"Tree"</span> <span class="ot">=</span> rpart_accuracy<span class="sc">$</span>overall[<span class="dv">1</span>])))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$`Comparison of Prediction Models`
-          model accuracy
-1           kNN   0.8282
-2 LogRegression   0.8142
-3          Tree   0.7345</code></pre>
+<pre><code>$`Comparison of Full Prediction Models`
+               kNN    LogReg      Tree
+Accuracy 0.8281938 0.8141593 0.7345133</code></pre>
 </div>
 </div>
-<p>we found that the k-Nearest Neighbors model was the most accurate, closely followed by the Logistic Regression model. However, the tree models were not tested using the same variables as the kNN and Logistic Regression models. A true comparison of the models would require our selected tree model to train and test on every variable for prediction like the other models.</p>
+<p>we found that the k-Nearest Neighbors model was the most accurate with a prediction accuracy of 82.82%, closely followed by the Logistic Regression model with a prediction accuracy of 81.42%. However, the tree models were not tested using the same variables as the kNN and Logistic Regression models. A true comparison of the models would require our selected tree model to train and test on every variable for prediction like the other model types.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>) <span class="co">#ensures reproducibility </span></span>
 <span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1376,22 +1349,14 @@ Prediction No Yes
 </div>
 <p>The new matrix for comparison of model accuracy shows</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"kNN"</span>, <span class="st">"LogRegression"</span>, <span class="st">"Tree"</span>)</span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>accuracy <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.8282</span>, <span class="fl">0.8142</span>, <span class="fl">0.8097</span>)</span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(model, accuracy)</span>
-<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">list</span>(<span class="st">"Comparison of Prediction Models"</span> <span class="ot">=</span> comparison))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">list</span>(<span class="st">"Comparison of Full Prediction Models"</span> <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="st">"kNN"</span> <span class="ot">=</span> knn_accuracy<span class="sc">$</span>overall[<span class="dv">1</span>], <span class="st">"LogReg"</span> <span class="ot">=</span> lr_accuracy<span class="sc">$</span>overall[<span class="dv">1</span>], <span class="st">"Tree"</span> <span class="ot">=</span> rpart_accuracy2<span class="sc">$</span>overall[<span class="dv">1</span>])))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$`Comparison of Prediction Models`
-          model accuracy
-1           kNN   0.8282
-2 LogRegression   0.8142
-3          Tree   0.8097</code></pre>
+<pre><code>$`Comparison of Full Prediction Models`
+               kNN    LogReg      Tree
+Accuracy 0.8281938 0.8141593 0.8097345</code></pre>
 </div>
 </div>
-<p>that there is no change in the accuracy rankings, but the Tree model’s accuracy had vastly improved by including the variables that were previously omitted.</p>
+<p>that there is no change in the accuracy rankings, but the Tree model’s accuracy had improved to 80.97% by including the variables that were previously omitted.</p>
 
 
 </section>

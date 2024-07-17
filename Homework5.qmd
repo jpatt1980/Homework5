@@ -13,27 +13,27 @@ editor_options:
 
 1.  What is the purpose of using cross-validation when fitting a random forest model?
 
-> The purpose of cross-validation is to ensure a prediction model chosen has a combination of parameters that provide the most accurate prediction without over-fitting to the training set.
+> The purpose of cross-validation is to evaluate multiple combinations of prediction parameters to ensure a chosen prediction model has a combination of parameters that provide the most accurate prediction without over-fitting to the training set.
 
 2.  Describe the bagged tree algorithm.
 
-> The bagged tree algorithm is where the sample data set has bootstrapped samples taken from it, decision trees generated from each sample, then the average of the decision trees determined to develop the prediction model.
+> The bagged tree algorithm is where the sample data set has bootstrapped samples taken from it, decision trees generated from each sample, then the average of the decision tree outcomes is used to determine the prediction model.
 
 3.  What is meant by a general linear model?
 
-> A general linear model is one where a variety of variable types can be analyzed on how well they predict a continuous variable of interest.
+> A general linear model is one where a variety of variable types can be combined and analyzed on how well they predict the outcome of a continuous variable.
 
 4.  When fitting a multiple linear regression model, what does adding an interaction term do? That is, what does it allow the model to do differently as compared to when it is not included in the model?
 
-> Adding an interaction term allows us to identify if the slopes of each variable's predictors are independent or if one affects the other. When they are not used in a prediction model, it is assumed that the outcome of one variable is independent from the other predictors in the model.
+> Adding an interaction term allows us to identify if the variables in a prediction model are indpenedent or if they are correlated. This allows for us to determine what variables, if any, should be removed from the prediction model.
 
 5.  Why do we split our data into a training and test set?
 
-> We split data into a training and test set to ensure our model is not biased to the data set we're using to develop the model. Otherwise we risk over-fitting to the data used to build the model, which will result in low accuracy of predicting how new data points will affect an outcome of interest.
+> We split data into a training and test set to ensure our model is not biased to the data set we're using to develop the model. Otherwise we risk over-fitting our prediction model to the data used to build it, which will result in low accuracy of predicting how new data points will affect an outcome.
 
 ## Task 2: Fitting Models
 
-The first thing we'll need to do is establish the libraries required to run the code for each of the models we're going to develop.
+The first thing we'll need to do is establish the libraries required to run the code for each of the variable summaries and prediction models we're going to develop.
 
 ```{r Download Libraries, warning = FALSE, message = FALSE}
 
@@ -53,7 +53,7 @@ library(class)
 
 ### 2.1 Quick EDA/Data Preparation
 
-#### 2.1.1 Read in heart.csv. Check on missingness and summarize the data, especially with respect to the variable relationships to HeartDisease.
+#### 2.1.1 Read in heart.csv. Check on missingness and summarize the data, especially with respect to the variable relationships to **HeartDisease**.
 
 First we will read the data set into R, and call the data frame `heart_df`.
 
@@ -83,7 +83,7 @@ print(heart_df_na_summary)
 
 We see that there are no missing values in the data set.
 
-Next we will summarize the data frame to determine if there are any irregularities that need to be further investigated before generating our prediction models. Summarized graphs of the variables are being done with respect to HeartDisease in order to determine which ones will be suitable for prediction modeling.
+Next we will summarize the data frame to determine if there are any irregularities that need to be further investigated before generating our prediction models. Summarized graphs of the variables are being done with respect to **HeartDisease** in order to determine which ones will be suitable for prediction modeling.
 
 ```{r Data Summary}
 
@@ -91,9 +91,9 @@ print(summary(heart_df))
 
 ```
 
-Review of the numeric variable summaries shows that there is an irregularity in the RestingBP data and that an irrgeularity may also exist in the Cholesterol data. For the five character variables, we generated graphic summaries that will be used to determine if the variable data requires further investigation for data cleaning or not.
+Review of the numeric variable summaries shows that there is an irregularity in the **RestingBP** data and that an irregularity may also exist in the Cholesterol data. For the five character variables, we generated graphic summaries that will be used to determine if the variable data requires further investigation for data cleaning or not.
 
-The irregularity in RestingBP is the summary information shows a minimum entry of 0.0. This value is highly unlikely unless the PT observed is already a corpse (or mannequin). First we will generate a histogram of the RestingBP values with regards to the HeartDisease's values of "0" for "Normal" and "1" for "Heart Disease" to determine if the RestingBP value is an outlier, and how many other outliers may be present.
+The irregularity in **RestingBP** is the summary information shows a minimum entry of 0.0. This value is highly unlikely under normal circumstances. First we will generate a histogram of the **RestingBP** values with regards to the **HeartDisease**'s values of "0" for "Normal" and "1" for "Heart Disease" to determine if the **RestingBP** value is an outlier, and how many other outliers may be present.
 
 ```{r RestingBP by HeartDisease histograms, warning = FALSE, message = FALSE}
 
@@ -105,7 +105,7 @@ ggplot(heart_df, aes(RestingBP)) +
 
 ```
 
-The histograms shows that the "0" value in RestingBP is an outlier, and that it is the only one. The remaining RestingBP data models a fairly normal distribution in both subgroups of HeartDisease. There appears to be a greater PT density in the  140+ Resting PB range "Heart Disease" HeartDisease group. Because there is only one outlier, it would be reasonable to remove it or replace the value with the mean of the remaining RestingBP values. RestingBP appears to be a suitable variable for prediction modeling.
+The histograms shows that the "0" value in **RestingBP** is an outlier, and that it is the only one. The remaining **RestingBP** data models a fairly normal distribution in both subgroups of **HeartDisease**. There appears to be a greater PT density in the 140+ Resting PB range "Heart Disease" **HeartDisease** group. Because there is only one outlier, it would be reasonable to remove it or replace the value with the mean of the remaining **RestingBP** values. **RestingBP** appears to be a suitable variable for prediction modeling.
 
 ```{r Remove "missing" RestingBP}
 
@@ -116,7 +116,7 @@ adjusted_heart_df
 
 ```
 
-[Healthline]("https://www.healthline.com/health/serum-cholesterol#results") reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of Cholesterol showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with RestingBP, we will use a histogram to summarize the Cholesterol data
+[Healthline](%22https://www.healthline.com/health/serum-cholesterol#results%22) reports that serum cholesterol levels are calculated by every person has some level of total cholesterol when tested for LDL, HDL, and Triglycerides. Because of this, the summary of **Cholesterol** showing a minimum entry of 0.0 is highly unlikely as mentioned above.Like with **RestingBP**, we will use a histogram to summarize the **Cholesterol** data.
 
 ```{r Cholesterol by HeartDisease histograms}
 
@@ -130,7 +130,7 @@ ggplot(adjusted_heart_df, aes(Cholesterol)) +
 
 ```
 
-The histogram shows that there are a substantial amount of outliers with Cholesterol levels of "0" in both groups. The graphical summary also shows that there are outliers in range of 450 to 600 of both subgroups.
+The histogram shows that there are a substantial amount of outliers with **Cholesterol** levels of "0" in both groups. The graphical summary also shows that there are outliers in range of 450 to 600 of both subgroups.
 
 ```{r Cholesterol is Zero matrix}
 
@@ -140,9 +140,9 @@ print(chol_matrix)
 
 ```
 
-The using "Cholesterol is zero" as our logic baseline, the `summary()` function determined that there are 172 entries with "0" reported for the PTs Cholesterol level. This accounts for approximately 19% of the overall data set, which is a large amount of the sample population. This use of "0" in this magnitude suggests it was intentional, and probably used instead of "NA" or some other coding to indicate a sample wasn't taken.
+The using "Cholesterol is zero" as our logic baseline, the `summary()` function determined that there are 172 entries with "0" reported for the PTs **Cholesterol** level. This accounts for approximately 19% of the overall data set, which is a large amount of the sample population. This use of "0" in this magnitude suggests it was intentional, and was likely used instead of "NA" or some other coding to indicate a sample wasn't taken. Unfortunately, this is not specified on **Healthline**'s website.
 
-However, substituting the mean of the remaining 81% of the Cholesterol levels for these values without knowing their distribution across the five data sources risks heavily biasing our prediction modeling to favor one group over another. Further summary analysis is required for assessing what to do with these observations.
+However, substituting the mean of the remaining 81% of the **Cholesterol** levels for these values without knowing their distribution across the five data sources risks heavily biasing our prediction modeling to favor one group over another. Further summary analysis is required for assessing what to do with these observations.
 
 ```{r Cholesterol by HeartDisease box plots}
 
@@ -153,11 +153,11 @@ ggplot(adjusted_heart_df, aes(HeartDisease, Cholesterol)) +
 
 ```
 
-Review of the HeartDisease sub-group box and whisker plots shows that the Cholesterol values of "0" greatly affect the IQR of the "Heart Disease" subgroup while having minimal to no effect on the "Normal" subgroup. The Cholesterol values of "0" do not appear to have an affect on the median values of either subgroup as they both are near the overall group median of 223.
+Review of the **HeartDisease** sub-group box and whisker plots shows that the **Cholesterol** values of "0" greatly affect the IQR of the "Heart Disease" subgroup while having minimal to no effect on the "Normal" subgroup. The **Cholesterol** values of "0" do not appear to have an affect on the median values of either subgroup as they both are near the overall group median of 223.
 
-The information provided by the three summary observations taken with respect to HeartDisease indicate that replacing the Cholesterol variable's values of "0" with the mean of the remaining Cholesterol values is reasonable after removing the outlying values that are greater than or equal to 450.
+The information provided by the three summary observations taken with respect to **HeartDisease** indicate that replacing the **Cholesterol** variable's values of "0" with the mean of the remaining **Cholesterol** values is reasonable after removing the outlying values that are greater than or equal to 450.
 
-First, we will create an adjsuted data frame that excludes the Cholesterol outliers that are greater than or equal to 450.
+First, we will create an adjsuted data frame that excludes the **Cholesterol** outliers that are greater than or equal to 450.
 
 ```{r Remove outliers 450+}
 
@@ -168,7 +168,7 @@ adjusted_heart_df
 
 ```
 
-Next, we will use the `na_if()` function to swap our "0" entries with "NA", then use the `mean()` function to replace the "NA" values with the mean of the remaining values. After we completed these steps, we will re-summarize Cholesterol using a histogram plots to view the changes to Cholesterol with respect to HeartDisease.
+Next, we will use the `na_if()` function to swap our "0" entries with "NA", then use the `mean()` function to replace the "NA" values with the mean of the remaining values. After we completed these steps, we will re-summarize Cholesterol using a histogram plots to view the changes to **Cholesterol** with respect to **HeartDisease**.
 
 ```{r Replace 0s with Variable Mean}
 
@@ -188,7 +188,7 @@ ggplot(adjusted_heart_df, aes(Cholesterol)) +
 
 ```
 
-Review of the histograms show that our Cholesterol data maintained a normal distribution with the adjusted data centered on the mean. Next we will compare Cholesterol summary information between the original data and the adjusted data.
+Review of the histograms show that our **Cholesterol** data maintained a normal distribution with the adjusted data centered on the mean. Next we will compare **Cholesterol** summary information between the original data and the adjusted data.
 
 ```{r Cholesterol summary comparisons}
 
@@ -198,13 +198,13 @@ print(list("Adjusted Heart Disease Cholesterol Summary" = summary(adjusted_heart
 
 ```
 
-Review of the two summary tables show that there were small changes in the median and Q3 information. There were substantial changes in the Min, Q1, Mean, and Max values. These changes were expected after the adjustments to the Min and Max values. 
+Review of the two summary tables show that there were small changes in the median and Q3 information. There were substantial changes in the Min, Q1, Mean, and Max values. These changes were expected after the adjustments to the Min and Max values.
 
-After imputing the mean for the zeros, it became more clear that the Cholesterol distribution was mostly below the median for the "Normal" HeartDisease group while it was  the appears to be a distinct difference in distribution of the Cholesteroal datat with respect to HeartDisease. Cholesterol appears to be suitable variable for prediction modeling.
+After imputing the mean for the zeros, it became more clear that the **Cholesterol** distribution was mostly below the median for the "Normal" **HeartDisease** group while it was the appears to be a distinct difference in distribution of the **Cholesteroal** datat with respect to **HeartDisease**. **Cholesterol** appears to be suitable variable for prediction modeling.
 
 Now that we have investigated the variables that first showed signs of needing addressed, we are going to continue analysis of the remaining variables
 
-Next we summarized the effect of Age on HeartDisease.
+Next we summarized the effect of **Age** on **HeartDisease**.
 
 ```{r Age by HeartDisease histogram}
 
@@ -217,9 +217,9 @@ ggplot(adjusted_heart_df, aes(Age)) +
 
 ```
 
-Review of the histogram plots show that there is a difference in the subgroups where the median Age for the "Heart Disease" category is higher. There are no prevalent outliers in either subgroup. Age appears to be a suitable variable for prediction modeling.
+Review of the histogram plots show that there is a difference in the subgroups where the median **Age** for the "Heart Disease" category is higher. There are no prevalent outliers in either subgroup. **Age** appears to be a suitable variable for prediction modeling.
 
-Next we summarized the effect of Sex on HeartDisease using a bar plot.
+Next we summarized the effect of **Sex** on **HeartDisease** using a bar plot.
 
 ```{r HeartDisease by Sex box plot, warning=FALSE, message=FALSE}
 
@@ -234,7 +234,7 @@ ggplot(heart_df_by_sex, aes(HeartDisease, count, fill=Sex)) +
 
 ```
 
-The bar plot shows that there are more males than females in both subgroups of Heart Disease, which indicates that the results of our prediction models will be heavily biased towards males. To better understand this bias, we generated a contingency table of HeartDisease vs Sex.
+The bar plot shows that there are more males than females in both subgroups of **HeartDisease**, which indicates that the results of our prediction models will be heavily biased towards males. To better understand this bias, we generated a contingency table of **HeartDisease** vs Sex.
 
 ```{r HeartDisease by Sex matrix}
 
@@ -242,11 +242,11 @@ list("Heart Disease by Sex" = table(adjusted_heart_df$HeartDisease, adjusted_hea
 
 ```
 
-The table confirms that there are more substantially more males in both HeartDisease groups than females. Using a scale factor of 50 PTs, males outnumber females in the study by a ratio of approximately 7:2. The table also shows that the odds of females having heart disease are approximately 1:3 while the odds of males having heart disease are approximately 9:5.
+The table confirms that there are more substantially more males in both **HeartDisease** groups than females. Using a scale factor of 50 PTs, males outnumber females in the study by a ratio of approximately 7:2. The table also shows that the odds of females having heart disease are approximately 1:3 while the odds of males having heart disease are approximately 9:5.
 
 Although the data is biased towards males, the female group accounts for 191 observations, which is approximately 21% of the data set. With this in mind, the female group observations should remain in the prediction model.
 
-Next, we summarized Chest Pain Type using a bar plot.
+Next, we summarized **ChestPainType** using a bar plot.
 
 ```{r HeartDisease by ChestPainType bar plot, warning=FALSE, message=FALSE}
 
@@ -261,9 +261,9 @@ ggplot(heart_df_by_pain, aes(HeartDisease, count, fill=ChestPainType)) +
 
 ```
 
-The summary shows that the majority of PTs with heart disease were not experiencing chest pain (ASY). The summary also shows that the majority of PTs without heart disease were experiencing chest pain of some sort. Comparing these observations, it is suggestive that not having chest pain is an indicator of having heart disease. ChestPainType does not appear to be a suitable variable for our prediciton models based on this logic.
+The summary shows that the majority of PTs with heart disease were not experiencing chest pain (ASY). The summary also shows that the majority of PTs without heart disease were experiencing chest pain of some sort. Comparing these observations, it is suggestive that not having chest pain is an indicator of having heart disease. **ChestPainType** does not appear to be a suitable variable for our prediction models based on this logic.
 
-Next we summarized FastingBS with respect to HeartDisease.
+Next we summarized **FastingBS** with respect to **HeartDisease**.
 
 ```{r  HeartDisease by FastingBS bar blot , warning=FALSE, message=FALSE}
 
@@ -278,19 +278,19 @@ ggplot(adj_heart_df_by_fastbs, aes(HeartDisease, count, fill= FastingBS)) +
 
 ```
 
-Review of the summary shows that there is a larger number of PTs with fasting blood sugar levels above 120 mg/dl. There are also more PTs in the "Heart Disease" category of HeartDisease. Because of the population difference in HeartDisease, we will generate a contingent table to further analyze FastingBS and determine if it is suitable for remaining in the projection model.
+Review of the summary shows that there is a larger number of PTs with fasting blood sugar levels above 120 mg/dl. There are also more PTs in the "Heart Disease" category of **HeartDisease**. Because of the population difference in **HeartDisease**, we will generate a contingency table to further analyze the differences in **FastingBS** to determine if it is suitable for remaining in the projection model.
 
-```{r HeartDisease by FastingBS matrix}
+```{r **HeartDisease** by FastingBS matrix}
 
 list("Heart Disease by Fasting BS" = table(adjusted_heart_df$HeartDisease, adjusted_heart_df$FastingBS))
 
 ```
 
-Using a scaling factor of 50, review of the table shows that the proportion of PTs in the "Normal" heart disease category with "FastingBS\>120" is approximately 1:7 while the proportion of PTs in the "Heart Disease" heart disease category with "FastingBS\>120" is approximately 3:7. This proportion increase suggests that FastingBS is suitable for prediction modeling.
+Using a scaling factor of 50, review of the table shows that the proportion of PTs in the "Normal" **HeartDisease** category with "FastingBS\>120" is approximately 1:7 while the proportion of PTs in the "Heart Disease" **HeartDisease** category with "FastingBS\>120" is approximately 3:7. This proportion increase suggests that **FastingBS** is suitable for prediction modeling.
 
-Next we generated a summary table for Resting ECG with respect to the HeartDisease subgroups.
+Next we generated a summary table for **RestingECG** with respect to the **HeartDisease** subgroups.
 
-```{r HeartDisease by Resting ECG bar plot, warning=FALSE, message=FALSE}
+```{r HeartDisease by RestingECG bar plot, warning=FALSE, message=FALSE}
 
 heart_df_by_ecg <- heart_df |>
   group_by(HeartDisease, RestingECG) |>
@@ -303,7 +303,7 @@ ggplot(heart_df_by_ecg, aes(HeartDisease, count, fill=RestingECG)) +
 
 ```
 
-The summary plot for Resting ECG shows that there were higher levels in each RestingECG category for PTs in the Heart Disease group vs the PTs in the Normal group. The distribution of the RestingECG categories stayed approximately the same, which is suggestive that the changes between the subgroups may be a result of there being more PTs with heart disease than those who are normal. We will generate a contingency table between HeartDisease and RestingECG to investigate this further.
+The summary plot for **RestingECG** shows that there were higher levels in each **RestingECG** category for PTs in the "Heart Disease" group vs the PTs in the "Normal" group. The distribution of the **RestingECG** categories appears to have stayed approximately the same, which is suggestive that the changes between the subgroups may be a result of there being more PTs with "Heart Disease" observed than those who had "Normal" observed. We will generate a contingency table between **HeartDisease** and **RestingECG** to investigate this further.
 
 ```{r HeartDisease by RestingECG matrix}
 
@@ -311,25 +311,25 @@ print(list("Heart Disease by Resting ECG" = table(heart_df$HeartDisease, heart_d
 
 ```
 
-Recalling the HeartDisease information from our adjusted data frame summary table,
+Recalling the **HeartDisease** information from our adjusted data frame summary table,
 
 ```{r Recall HeartDisease summary info}
 summary(adjusted_heart_df$HeartDisease)
 ```
 
-the mean for HeartDisease is "0.5527". This shows that there are more PTs with heart disease than not in the study. Looking at the contingency table between HeartDisease and RestingECG, we see that the majority of PTs in both categories reported "Normal". 
+the mean for **HeartDisease** is "0.5527". This shows that there are more PTs with heart disease than not in the study, but overall the distribution is fairly even. Looking at the contingency table between **HeartDisease** and **RestingECG**, we see that the majority of PTs in both categories reported "Normal".
 
-Due to the split of "-Normal" data into separate categories, we will need to combine the "-Normal" observation data and assess if it is equal to or greater than the "Normal" observations in either subgroup of HeartDisease. We will do this using the information provided by the HeartDisease by RestingECG contingency table. 
+Due to the split of "-Normal" data into separate categories, we will need to combine the "-Normal" observation data and assess if it is equal to or greater than the "Normal" observations in either subgroup of **HeartDisease**. We will do this using the information provided by the **HeartDisease** by **RestingECG** contingency table.
 
-Adding the LVH and ST RestingECG values together for the "Normal" heart disease category provided us with a "-Normal" value of 143 PTS. Using a scaling factor of 50, the proportion of "Normal" to "-Normal" is approximately 5:3. This proportion heavily favors the "Normal" RestingECG group.  
+Adding the LVH and ST **RestingECG** values together for the "Normal" **HeartDisease** category provided us with a "-Normal" value of 143 PTS. Using a scaling factor of 50, the proportion of "Normal" to "-Normal" is approximately 5:3.
 
-Adding the LVH and ST RestingECG values together for the "Heart Disease" heart disease category provided us with a "-Normal" value of 123 PTs. Using a scaling factor of 50, the proportion of "Normal" to "-Normal" is approximately 5:4. This proportion favors the "Normal" RestingECG group. 
+Adding the LVH and ST **RestingECG** values together for the "Heart Disease" **HeartDisease** category provided us with a "-Normal" value of 123 PTs. Using a scaling factor of 50, the proportion of "Normal" to "-Normal" is approximately 5:4
 
-While both HeartDisease subgroups are heavily influenced by "Normal" RestingECG observations, the change in proportions where the "Heart Disease" HeartDisese category is almost even with "Normal" suggests that RestingECG may be suitable for use in prediction modeling.
+While both **HeartDisease** subgroups are heavily influenced by "Normal" **RestingECG** observations, the change in proportions where the "Heart Disease" **HeartDisaese** category is almost even with "Normal" suggests that **RestingECG** may be suitable for use in prediction modeling.
 
-Next we summarized MaxHR with respect to HeartDisease.
+Next we summarized **MaxHR** with respect to **HeartDisease**.
 
-```{r MaxHR by HeartDisese histogram}
+```{r MaxHR by HeartDisease histogram}
 
 ggplot(adjusted_heart_df, aes(MaxHR)) +
   geom_histogram(aes(y=..density..), binwidth=10, fill="#CC0000", color = "lightgray") +
@@ -339,9 +339,9 @@ ggplot(adjusted_heart_df, aes(MaxHR)) +
   
 ```
 
-The summary graphics with respect to HeartDisease show that MaxHR has a generally normal distribution. When observed with respect to HeartDisease, the distribution of the "Normal" category tended to be higher than the "Heart Disease" category. MaxHR appears to be suitable for use in prediction modeling.
+The summary graphics with respect to **HeartDisease** show that **MaxHR** has a generally normal distribution. When observed with respect to **HeartDisease**, the distribution of the "Normal" category tended to be higher than the "Heart Disease" category. **MaxHR** appears to be suitable for use in prediction modeling.
 
-Next we summarized ExerciseAngina with respect to HeartDisease.
+Next we summarized **ExerciseAngina** with respect to **HeartDisease**.
 
 ```{r HeartDisease by ExerciseAngina bar plot, warning=FALSE, message=FALSE}
 
@@ -356,9 +356,9 @@ ggplot(heart_df_by_ex_angina, aes(HeartDisease, count, fill= ExerciseAngina)) +
 
 ```
 
-The summary graph show a change in the proportions between the Normal and Heart Disease groups. The proportion of exercised induced chest pain reported shifted from approximately 1:7 reporting chest pain to approximately 3:2 reporting chest pain. This data suggests that ExerciseAngina is a good variable for use in training our prediction model.
+The summary graph show a change in the proportions between the "Normal" and "Heart Disease" groups. The proportion of exercised induced chest pain reported shifted from approximately 1:7 reporting chest pain to approximately 3:2 reporting chest pain. This data suggests that **ExerciseAngina** is a good variable for use in training our prediction model.
 
-Finally, we summarized Oldpeak with respect to HeartDisease.
+Finally, we summarized **Oldpeak** with respect to **HeartDisease**.
 
 ```{r Oldpeak by HeartDisease histogram, warning=FALSE, message=FALSE}
 
@@ -370,7 +370,7 @@ ggplot(adjusted_heart_df, aes(Oldpeak)) +
 
 ```
 
-Histograms shows an fairly uniform distribution with a disproportionate number of observations having an Old Peak value of "0". However, unlike our Cholesterol variable, these values do not appear to be outleirs from the rest of the variable group. Generating a summary table of Oldpeak
+The histograms show a fairly uniform distribution with a disproportionate number of observations having an **Oldpeak** value of "0". However, unlike our **Cholesterol** variable, these values do not appear to be outleirs from the rest of the variable group. Generating a summary table of **Oldpeak**
 
 ```{r Determine # of Oldpeak 0 values}
 
@@ -389,7 +389,7 @@ ggplot(adjusted_heart_df, aes(HeartDisease, Oldpeak)) +
 
 ```
 
-confirms that the "0" values are not outliers in the overall data set, and they establish the Q1 value. A box plot of Oldpeak with reference to HeartDisease
+confirms that the "0" values are not outliers in the overall data set, and they establish the Q1 value. A box plot of **Oldpeak** with reference to **HeartDisease**
 
 ```{r Oldpeak by HeartDisease box plot}
 
@@ -400,11 +400,11 @@ ggplot(adjusted_heart_df, aes(HeartDisease, Oldpeak)) +
 
 ```
 
-shows that the value "0" heavily influences the IQR of the "Normal" heart disease category. The value "0" has much less effect on the IQR of the "Heart Disease" heart disease category. This suggests that Oldpeak is suitable for inclusion in prediction modeling.
+shows that the value "0" heavily influences the IQR of the "Normal" **HeartDisease** category. The value "0" has much less effect on the IQR of the "Heart Disease" **HeartDisease** category. This suggests that \*\*Oldpeak\* is suitable for inclusion in prediction modeling.
 
-We did not analyze ST_Slope because the variable is being dropped from the data set per the Homework5 instructions.
+We did not analyze **ST_Slope** because the variable is being dropped from the data set per the Homework5 instructions.
 
-#### 2.1.2 Create a new variable that is a factor of HeartDisease, (1 = Yes, 0 = No) Remove the ST_Slope and HeartDisease variables.
+#### 2.1.2 Create a new variable that is a factor of **HeartDisease**, (1 = Yes, 0 = No) Remove the ST_Slope and **HeartDisease** variables.
 
 ```{r Create HeartDiseaseFct variable}
 
@@ -416,7 +416,7 @@ adjusted_heart_df <- adjusted_heart_df |>
 
 #### 2.1.3 Set-up the data frame to ensure the variables are all numeric predictors for kNN modeling later in the program.
 
-Set up dummy variables for ExerciseAngina, ChestPainType, and RestingECG using `dummyVars()` `and predict()`. Then we will convert the resulting table into a data frame for use in our predictive models.
+Set up dummy variables for **ExerciseAngina**, **ChestPainType**, and **RestingECG** using `dummyVars()` `and predict()`. Then we will convert the resulting table into a data frame for use in our predictive models.
 
 ```{r Create Dummy variables for kNN model}
 
@@ -438,14 +438,12 @@ print(modeling_df)
 
 Now that we have a data frame with dummy variables for the variables with factor levels, we can split the data into training and test sets for use when developing our prediction models.
 
-We previously identified that ChestPainType and RestingECG are not suitable for prediction modeling. Because of this, we will remove them then create our training our test subsets.
-
 ```{r Remove unused variables from df before kNN modeling}
 
-# Remove ChestPainType, RestingECG, and HeartDisese.No from the data frame
+# Remove from the data frame
 
-# HeartDisease.No is being removed because it is the inverse of the variable of
-# HeartDisease.Yes which we are using as the predicted variable. 
+# HeartDiseaseFct.No is being removed because it is the inverse of the variable 
+# HeartDiseaseFct.Yes which we are using as the predicted variable. 
 
 modeling_df <- modeling_df |>
   relocate(starts_with("Heart")) |>
@@ -485,9 +483,9 @@ Now that we have created our test and training sets, we will fit them to a knn p
 
 #### 2.3.1 Determine variables to use in the kNN model.
 
-All of the variables are numeric after creating the data frame with dummy variables for the levels of Sex, ExerciseAngina, and HeartDisease. We previously removed variables ChestPainType and RestingECG due to them not being good for predictive modeling. We are now ready to train and test our prediction models.
+All of the variables are numeric after creating the data frame with dummy variables for the levels of **Sex**, **ChestPainType**, **RestingECG**, **ExerciseAngina**, and **HeartDisease**. We are now ready to train and test our prediction models.
 
-We will assign the target variable as HeartDisease.Yes, and convert it to a factor in both our training and test sets for use in comparison modeling.
+We will assign the target variable as **HeartDisease.Yes**, and convert it to a factor in both our training and test sets for use in comparison modeling.
 
 ```{r Ensure HeartDisease.Yes is a factor in both data subsets}
 
@@ -526,6 +524,8 @@ Now that we have a model, we will check how well it does using the `confusionMat
 
 ```{r Test the kNN model for accuracy}
 
+set.seed(1)
+
 # Generate model prediction against the test data set
 knn_pred <- predict(knnFit, newdata = modelingTest)
 
@@ -537,7 +537,7 @@ print(knn_accuracy)
 
 ```
 
-`confusionMatrix` testing showed that our kNN model is approximately 81.06% accurate at predicting if a PT has Heart Disease or not. This accuracy is higher than what our model accuracy generated during training. 
+`confusionMatrix` testing showed that our kNN model is approximately 82.82% accurate at predicting if a PT has Heart Disease or not. This accuracy is higher than the model accuracy generated during training.
 
 ### 2.4 Logistic Regression
 
@@ -575,7 +575,7 @@ print(list("Heart Training Dimensions" = dim(heart_train),
 
 Now, we will fit the models on the training set using CV with the same parameters used in the kNN model.
 
-The first model is based on using ExerciseAngina as a predictor variable. The second model is based on using Oldpeak as a predictor variable. The third model uses all variables in the data frame. ExerciseAngina and Oldpeak are chosen as independent predictors because of the differences between the subgroups of HeartDisease.
+The first model is based on using **ExerciseAngina** as a predictor variable. The second model is based on using **ExerciseAngina** and **Oldpeak** as predictor variables. The third model uses all variables in the data frame.
 
 ```{r Generate 3 Logistic Regression models for comparison}
 
@@ -616,9 +616,9 @@ print(data.frame(t(mod1$results), t(mod2$results), t(mod3$results)))
 
 ```
 
-The best model of the three is model 3, the full model. ExerciseAngina tested well as an independent predictor with an accuracy rate of 73.24%. Adding Oldpeak only slightly improved the prediction model to an accuracy rate of 76.26% respectively, but were beaten out by the full model accurate rate of 81.77%. 
+The best model of the three is model 3, the full model. **ExerciseAngina** tested well as an independent predictor with an accuracy rate of 73.24%. Adding **Oldpeak** only slightly improved the prediction model to an accuracy rate of 76.26% respectively, but the combination of the two variables were beaten out by the full model accurate rate of 81.49%.
 
-The full model doing the best was not unexpected. There are several variables that appeared to influence HeartDisease. What was surprising is adding the remaining variables only increased the accuracy by "5.22%".
+The full model doing the best was not unexpected. There are several variables that appeared to influence **HeartDisease** during EDA. What was surprising is adding the remaining variables only increased the accuracy by "5.22%".
 
 Now that we have chosen our model, we will check how well it does on the test set using the `confusionMatrix` function.
 
@@ -637,19 +637,19 @@ print(lr_accuracy)
 
 ```
 
-`confusionMatrix` testing showed that our chosen logistic regression model is approximately 81.42% accurate at predicting if a PT has Heart Disease or not.
+`confusionMatrix` testing showed that our chosen logistic regression model is approximately 81.42% accurate at predicting if a PT has "Heart Disease" or not.
 
 ### 2.5 Tree Models
 
 #### 2.5.1 Choose variables of interest for tree modeling
 
-The variables chosen for the following models include the variables not tested previously Age, RestingBP, and MaxHR. These variables appeared to be suitable for predicting HeartDisease during EDA, but were not used in the LR modeling.
+The variables chosen for the tree models are: **Age**, **RestingBP**, and **MaxHR**. These variables appeared to be suitable for predicting **HeartDisease** during EDA, but were not used in the LR modeling.
 
 For consistency, we will be using the same train and test subsets used in performing our logistic regression models. With these subsets, we will generate a classification tree, random forest tree, and a boosted tree using repeated 10 fold CV along with specified parameters in order to select a best fit.
 
 For our classification tree, we will be using method - "rpart" and tuning parameter "cp". We will assign values "0" though "0.1" by "0.001" to "cp".
 
-```{r Ensure HeartDiseaseFct is a factor}
+```{r Ensure **HeartDisease**Fct is a factor}
 
 heart_train$HeartDiseaseFct <- factor(heart_train$HeartDiseaseFct )
 
@@ -673,7 +673,7 @@ print(rpart_train)
 
 ```
 
-The optimal model using "rpart" had a cp = 0.03 with a prediction accuracy of 65.50%
+The optimal model using "rpart" had a cp = 0.018 with a prediction accuracy of 70.04%
 
 For our random forest tree model, we will be using method = "rf" with mtry as the tuning parameter with the number of predictors for it's value.
 
@@ -693,7 +693,7 @@ print(rf_train)
 
 ```
 
-The optimal model using "rf" was mtry = 1 with a prediction accuracy of 66.68%
+The optimal model using "rf" was mtry = 1 with a prediction accuracy of 66.51%
 
 For our boosted tree model, we will be using method = "gbm" with n.trees, interaction.depth, shrinkage, and n.minobsinnode.
 
@@ -718,7 +718,7 @@ print(gbm_train)
 
 ```
 
-The optimal model using "gbm" was the combination of n.trees = 25, interaction.depth = 3, shrinkage = 0.1, and n.minobsinnode = 10 with a prediction accuracy of 70.48%
+The optimal model using "gbm" was the combination of n.trees = 25, interaction.depth = 3, shrinkage = 0.1, and n.minobsinnode = 10 with a prediction accuracy of 70.46%
 
 Check how each of the above chosen models do on the test set using the `confusionMatrix` function.
 
@@ -728,46 +728,39 @@ set.seed(1)
 
 # Generate model predictions against the test data set
 rpart_train_pred <- predict(rpart_train, newdata = heart_test)
-#rf_train_pred <- predict(rf_train, newdata = heart_test)
-#gbm_train_pred <- predict(boosted_train, newdata = heart_test)
+rf_train_pred <- predict(rf_train, newdata = heart_test)
+gbm_train_pred <- predict(gbm_train, newdata = heart_test)
 
 
 # Validate the accuracy of the prediction against the test data set
 rpart_accuracy <- confusionMatrix(rpart_train_pred, heart_test$HeartDiseaseFct)
-#rf_accuracy <- confusionMatrix(rf_train_pred, heart_test$HeartDiseaseFct)
-#gbm_accuracy <- confusionMatrix(gbm_train_pred, heart_test$HeartDiseaseFct)
+rf_accuracy <- confusionMatrix(rf_train_pred, heart_test$HeartDiseaseFct)
+gbm_accuracy <- confusionMatrix(gbm_train_pred, heart_test$HeartDiseaseFct)
 
 
 # Frame the results for comparison
-#regTrees <- data.frame(rpart_accuracy$overall, rf_accuracy$overall, boosted_accuracy$overall)
+regTrees <- data.frame("RPart" = rpart_accuracy$overall, "RF" = rf_accuracy$overall, "GBM" =gbm_accuracy$overall)
 
 # Output the results
-#print(regTrees)
-
-print(rpart_accuracy)
+print(regTrees)
 
 ```
-Comparing our three regression tree models after processing them through the `confusionMatrix` function shows that the rpart regression tree method had the highest level of accuracy at 73.45%, closely followed by the "gbm" regression tree method with an accuracy level of 71.68%.  
 
+Comparing our three regression tree models after processing them through the `confusionMatrix` function shows that the rpart regression tree method had the highest level of accuracy at 73.45%, closely followed by the "gbm" regression tree method with an accuracy level of 73.01%.
 
 ### Wrap up
 
 #### Which model overall did the best job (in terms of accuracy) on the test set?
 
-When doing a side by side comparison of the `confusionMatrix` generated accuracy rates of the three selected model types, 
+When doing a side by side comparison of the `confusionMatrix` generated accuracy rates of the three selected model types,
+
 ```{r Frame the results of the best model types}
 
-model <- c("kNN", "LogRegression", "Tree")
-
-accuracy <- c(0.8282, 0.8142, 0.7345)
-
-comparison <- data.frame(model, accuracy)
-
-print(list("Comparison of Prediction Models" = comparison))
+print(list("Comparison of Full Prediction Models" = data.frame("kNN" = knn_accuracy$overall[1], "LogReg" = lr_accuracy$overall[1], "Tree" = rpart_accuracy$overall[1])))
 
 ```
 
-we found that the k-Nearest Neighbors model was the most accurate, closely followed by the Logistic Regression model. However, the tree models were not tested using the same variables as the kNN and Logistic Regression models. A true comparison of the models would require our selected tree model to train and test on every variable for prediction like the other models.
+we found that the k-Nearest Neighbors model was the most accurate with a prediction accuracy of 82.82%, closely followed by the Logistic Regression model with a prediction accuracy of 81.42%. However, the tree models were not tested using the same variables as the kNN and Logistic Regression models. A true comparison of the models would require our selected tree model to train and test on every variable for prediction like the other model types.
 
 ```{r Rpart train and test using all variables}
 
@@ -790,16 +783,11 @@ print(rpart_accuracy2)
 ```
 
 The new matrix for comparison of model accuracy shows
+
 ```{r New model type comparison matrix}
 
-model <- c("kNN", "LogRegression", "Tree")
-
-accuracy <- c(0.8282, 0.8142, 0.8097)
-
-comparison <- data.frame(model, accuracy)
-
-print(list("Comparison of Prediction Models" = comparison))
+print(list("Comparison of Full Prediction Models" = data.frame("kNN" = knn_accuracy$overall[1], "LogReg" = lr_accuracy$overall[1], "Tree" = rpart_accuracy2$overall[1])))
 
 ```
-that there is no change in the accuracy rankings, but the Tree model's accuracy had vastly improved by including the variables that were previously omitted. 
 
+that there is no change in the accuracy rankings, but the Tree model's accuracy had improved to 80.97% by including the variables that were previously omitted.
